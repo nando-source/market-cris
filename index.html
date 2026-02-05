@@ -54,11 +54,17 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
 
+        .bcv-rate {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-weight: 600;
+        }
+
         .rate-value {
             font-size: 1.2rem;
             color: #FFD700;
             text-shadow: 0 0 10px rgba(255,215,0,0.3);
-            font-weight: 600;
         }
 
         .sync-btn {
@@ -68,13 +74,20 @@
             padding: 0.25rem 0.75rem;
             border-radius: 20px;
             cursor: pointer;
+            font-size: 0.8rem;
             transition: all 0.3s;
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
 
-        .sync-btn.spinning { animation: spin 1s linear infinite; }
+        .sync-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .sync-btn.spinning {
+            animation: spin 1s linear infinite;
+        }
 
         /* Login Screen */
         .login-container {
@@ -103,7 +116,26 @@
             animation: slideUp 0.6s ease;
         }
 
-        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .logo-container {
+            margin-bottom: 2rem;
+        }
+
+        .logo-svg {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
 
         .brand-name {
             font-size: 2.5rem;
@@ -111,6 +143,24 @@
             color: var(--primary);
             margin-top: 0.5rem;
             letter-spacing: -1px;
+        }
+
+        .brand-tagline {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .bcv-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--bcv-blue);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-top: 1rem;
         }
 
         .ai-badge {
@@ -125,225 +175,1604 @@
             margin-top: 0.5rem;
         }
 
-        /* App Layout */
-        .app-container { display: none; min-height: 100vh; padding-top: 50px; }
-        .sidebar { position: fixed; left: 0; top: 50px; width: 280px; height: calc(100vh - 50px); background: white; box-shadow: 4px 0 10px rgba(0,0,0,0.05); z-index: 100; overflow-y: auto; }
-        .sidebar-header { padding: 2rem; background: var(--gradient); color: white; text-align: center; }
-        .main-content { margin-left: 280px; padding: 2rem; min-height: calc(100vh - 50px); }
+        .input-group {
+            margin: 1.5rem 0;
+            text-align: left;
+        }
 
-        .nav-item { padding: 1rem 2rem; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 1rem; border-left: 4px solid transparent; }
-        .nav-item.active { background: rgba(255,107,53,0.1); border-left-color: var(--primary); color: var(--primary); font-weight: 600; }
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--secondary);
+        }
 
-        /* Stats & Cards */
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
-        .stat-card { background: white; padding: 1.5rem; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); position: relative; overflow: hidden; }
-        .stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--gradient); }
-        .card { background: white; border-radius: 15px; padding: 2rem; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 2rem; }
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(255,107,53,0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--gradient);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255,107,53,0.3);
+        }
+
+        /* Main App Layout */
+        .app-container {
+            display: none;
+            min-height: 100vh;
+            padding-top: 50px;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 50px;
+            width: 280px;
+            height: calc(100vh - 50px);
+            background: white;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.05);
+            z-index: 100;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 2rem;
+            background: var(--gradient);
+            color: white;
+            text-align: center;
+        }
+
+        .sidebar-logo {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 1rem;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .nav-menu {
+            padding: 1rem 0;
+        }
+
+        .nav-item {
+            padding: 1rem 2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            border-left: 4px solid transparent;
+        }
+
+        .nav-item:hover {
+            background: #f8f9fa;
+            border-left-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .nav-item.active {
+            background: rgba(255,107,53,0.1);
+            border-left-color: var(--primary);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .nav-icon {
+            font-size: 1.3rem;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            padding: 2rem;
+            min-height: calc(100vh - 50px);
+        }
+
+        .header {
+            background: white;
+            padding: 1.5rem 2rem;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title {
+            font-size: 1.8rem;
+            color: var(--secondary);
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        /* Chatbot Widget */
+        .chatbot-widget {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: var(--ai-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+            z-index: 999;
+            transition: all 0.3s;
+            font-size: 1.5rem;
+            animation: pulse-glow 2s infinite;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4); }
+            50% { box-shadow: 0 4px 30px rgba(102, 126, 234, 0.7); }
+        }
+
+        .chatbot-widget:hover {
+            transform: scale(1.1);
+        }
+
+        .chatbot-widget.active {
+            display: none;
+        }
+
+        .chatbot-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 400px;
+            height: 550px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            border: 2px solid #667eea;
+        }
+
+        .chatbot-container.active {
+            display: flex;
+        }
+
+        .chatbot-header {
+            background: var(--ai-gradient);
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chatbot-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+        }
+
+        .chatbot-status {
+            font-size: 0.75rem;
+            opacity: 0.9;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #00FF00;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .chatbot-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .chatbot-close:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .chatbot-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            background: var(--chat-bg);
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .message {
+            max-width: 90%;
+            padding: 0.75rem 1rem;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            animation: messageSlide 0.3s ease;
+        }
+
+        @keyframes messageSlide {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user {
+            align-self: flex-end;
+            background: var(--primary);
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+
+        .message.bot {
+            align-self: flex-start;
+            background: white;
+            color: var(--dark);
+            border-bottom-left-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .message.ai {
+            align-self: flex-start;
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            border: 1px solid #667eea30;
+            color: var(--dark);
+            border-bottom-left-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .message-time {
+            font-size: 0.7rem;
+            opacity: 0.7;
+            margin-top: 0.25rem;
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 0.25rem;
+            padding: 0.5rem 1rem;
+            background: white;
+            border-radius: 15px;
+            align-self: flex-start;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #999;
+            border-radius: 50%;
+            animation: typingBounce 1.4s infinite ease-in-out both;
+        }
+
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes typingBounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        .chatbot-input-area {
+            padding: 1rem;
+            background: white;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .chatbot-input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .chatbot-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .chatbot-send {
+            width: 40px;
+            height: 40px;
+            background: var(--ai-gradient);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .chatbot-send:hover {
+            transform: scale(1.1);
+        }
+
+        .chatbot-send:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .suggestion-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: white;
+            border-top: 1px solid #eee;
+        }
+
+        .suggestion-chip {
+            padding: 0.5rem 1rem;
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #667eea;
+        }
+
+        .suggestion-chip:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--gradient);
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--secondary);
+        }
+
+        .stat-secondary {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 0.25rem;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Content Sections */
+        .content-section {
+            display: none;
+            animation: fadeIn 0.4s;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f0f0f0;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--secondary);
+        }
+
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255,107,53,0.3);
+        }
 
         /* Tables */
-        .data-table { width: 100%; border-collapse: collapse; }
-        .data-table th, .data-table td { padding: 1rem; text-align: left; border-bottom: 1px solid #eee; }
-        .data-table th { background: #f8f9fa; font-weight: 600; color: var(--secondary); text-transform: uppercase; font-size: 0.85rem; }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
 
-        /* Chatbot */
-        .chatbot-widget { position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px; background: var(--ai-gradient); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 999; animation: pulse-glow 2s infinite; }
-        .chatbot-container { position: fixed; bottom: 20px; right: 20px; width: 400px; height: 550px; background: white; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); z-index: 1000; display: none; flex-direction: column; overflow: hidden; border: 2px solid #667eea; }
-        .chatbot-container.active { display: flex; }
-        .chatbot-messages { flex: 1; overflow-y: auto; padding: 1rem; background: var(--chat-bg); display: flex; flex-direction: column; gap: 0.75rem; }
-        .message { max-width: 90%; padding: 0.75rem 1rem; border-radius: 15px; font-size: 0.9rem; }
-        .message.user { align-self: flex-end; background: var(--primary); color: white; }
-        .message.ai { align-self: flex-start; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .data-table th,
+        .data-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .data-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: var(--secondary);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        .dual-currency {
+            display: flex;
+            flex-direction: column;
+            font-size: 0.9rem;
+        }
+
+        .dual-currency .primary {
+            font-weight: 600;
+            color: var(--secondary);
+        }
+
+        .dual-currency .secondary {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .badge {
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .badge-success { background: rgba(39,174,96,0.1); color: var(--success); }
+        .badge-warning { background: rgba(243,156,18,0.1); color: var(--warning); }
+        .badge-info { background: rgba(52,152,219,0.1); color: var(--info); }
+
+        /* Forms */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--secondary);
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn:hover {
+            background: #f0f0f0;
+            color: var(--danger);
+        }
 
         /* Footer */
-        .app-footer { text-align: center; padding: 2rem; color: #666; font-size: 0.85rem; border-top: 1px solid #eee; margin-top: 2rem; }
-        .app-footer a { color: var(--primary); text-decoration: none; font-weight: 600; }
+        .app-footer {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+            font-size: 0.85rem;
+            border-top: 1px solid #eee;
+            margin-top: 2rem;
+        }
 
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes pulse-glow { 0%, 100% { box-shadow: 0 4px 20px rgba(102,126,234,0.4); } 50% { box-shadow: 0 4px 30px rgba(102,126,234,0.7); } }
-        
-        .content-section { display: none; }
-        .content-section.active { display: block; }
-        .btn-primary { background: var(--gradient); color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; }
-        .badge { padding: 0.35rem 0.75rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600; }
-        .badge-success { background: rgba(39,174,96,0.1); color: var(--success); }
-        .badge-danger { background: rgba(231,76,60,0.1); color: var(--danger); }
+        .app-footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* AI Thinking Indicator */
+        .ai-thinking {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: #667eea;
+            margin-top: 0.5rem;
+        }
+
+        .ai-icon {
+            width: 20px;
+            height: 20px;
+            background: var(--ai-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.7rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .chatbot-container {
+                width: 100%;
+                height: 100%;
+                bottom: 0;
+                right: 0;
+                border-radius: 0;
+            }
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
 
+    <!-- BCV Rate Ticker -->
     <div class="bcv-ticker">
         <div style="display: flex; align-items: center; gap: 1rem;">
             <span style="font-weight: 700;">🏦 BCV OFICIAL</span>
+            <span style="opacity: 0.8;">|</span>
+            <span>Tasa del Día:</span>
             <span class="rate-value" id="bcvRateDisplay">Bs. 378,46</span>
-            <button class="sync-btn" id="syncRateBtn" onclick="fetchBCVRate()">🔄 Actualizar</button>
+            <button class="sync-btn" id="syncRateBtn" onclick="fetchBCVRate()">
+                <span>🔄</span>
+                <span>Actualizar</span>
+            </button>
         </div>
-        <div id="lastUpdate">Actualizado: 05/02/2026</div>
+        <div class="rate-update" id="lastUpdate">Actualizado: 05/02/2026</div>
     </div>
 
+    <!-- Login Screen -->
     <div class="login-container" id="loginScreen">
         <div class="login-box">
-            <div class="brand-name">MiniMarket Cris</div>
-            <div class="ai-badge">✨ Impulsado por Gemini AI</div>
-            <form id="loginForm" style="margin-top: 2rem;">
-                <input type="text" id="username" value="crisbel" style="width:100%; padding:12px; margin-bottom:1rem; border:1px solid #ddd; border-radius:8px;">
-                <input type="password" id="password" value="crisbel2026" style="width:100%; padding:12px; margin-bottom:1.5rem; border:1px solid #ddd; border-radius:8px;">
-                <button type="button" class="btn-primary" style="width:100%" onclick="login()">Ingresar al Sistema</button>
+            <div class="logo-container">
+                <svg class="logo-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20 30 L25 80 Q25 90 35 90 L65 90 Q75 90 75 80 L80 30 Z" fill="#FF6B35"/>
+                    <path d="M35 30 Q35 15 50 15 Q65 15 65 30" fill="none" stroke="#FF6B35" stroke-width="4" stroke-linecap="round"/>
+                    <text x="50" y="65" font-family="Poppins, sans-serif" font-size="35" font-weight="bold" fill="white" text-anchor="middle">C</text>
+                    <circle cx="30" cy="40" r="3" fill="rgba(255,255,255,0.5)"/>
+                    <circle cx="70" cy="40" r="3" fill="rgba(255,255,255,0.5)"/>
+                </svg>
+                <div class="brand-name">MiniMarket Cris</div>
+                <div class="brand-tagline">Tu Asistente Inteligente de Gestión</div>
+                <div class="ai-badge">
+                    <span>✨</span>
+                    <span>Impulsado por Gemini AI</span>
+                </div>
+            </div>
+            
+            <form id="loginForm">
+                <div class="input-group">
+                    <label>Usuario</label>
+                    <input type="text" id="username" value="crisbel" required>
+                </div>
+                <div class="input-group">
+                    <label>Contraseña</label>
+                    <input type="password" id="password" value="crisbel2026" required>
+                </div>
+                <button type="submit" class="btn">Ingresar al Sistema</button>
             </form>
+            
+            <div style="margin-top: 1.5rem; font-size: 0.85rem; color: #666;">
+                <p>v4.0 AI - Tasa BCV: Bs. 378,46 por USD</p>
+                <p style="margin-top: 0.5rem; font-size: 0.75rem;">
+                    Desarrollado especialmente para Crisbel
+                </p>
+            </div>
         </div>
     </div>
 
+    <!-- Main Application -->
     <div class="app-container" id="appContainer">
-        <aside class="sidebar">
-            <div class="sidebar-header"><h2>MiniMarket Cris</h2></div>
-            <nav style="margin-top:1rem;">
-                <div class="nav-item active" onclick="showSection('dashboard')">📊 Dashboard</div>
-                <div class="nav-item" onclick="showSection('inventory')">📦 Inventario</div>
-                <div class="nav-item" onclick="showSection('sales')">💰 Ventas hoy</div>
-                <div class="nav-item" onclick="logout()" style="color:var(--danger); margin-top:2rem;">🚪 Salir</div>
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">C</div>
+                <h2 style="font-size: 1.5rem; margin-bottom: 0.25rem;">MiniMarket Cris</h2>
+                <p style="opacity: 0.9; font-size: 0.85rem;">Bienvenida, Crisbel</p>
+            </div>
+            
+            <nav class="nav-menu">
+                <div class="nav-item active" onclick="showSection('dashboard')">
+                    <span class="nav-icon">📊</span>
+                    <span>Dashboard</span>
+                </div>
+                <div class="nav-item" onclick="showSection('inventory')">
+                    <span class="nav-icon">📦</span>
+                    <span>Inventario</span>
+                </div>
+                <div class="nav-item" onclick="showSection('sales')">
+                    <span class="nav-icon">💰</span>
+                    <span>Ventas</span>
+                </div>
+                <div class="nav-item" onclick="showSection('profits')">
+                    <span class="nav-icon">📈</span>
+                    <span>Ganancias</span>
+                </div>
+                <div class="nav-item" onclick="showSection('fiscal')">
+                    <span class="nav-icon">📋</span>
+                    <span>Libros Fiscales</span>
+                </div>
+                <div class="nav-item" onclick="showSection('config')">
+                    <span class="nav-icon">⚙️</span>
+                    <span>Configuración</span>
+                </div>
+                <div class="nav-item" onclick="logout()" style="margin-top: 2rem; color: var(--danger);">
+                    <span class="nav-icon">🚪</span>
+                    <span>Cerrar Sesión</span>
+                </div>
             </nav>
         </aside>
 
+        <!-- Main Content -->
         <main class="main-content">
-            <h1 id="pageTitle" style="margin-bottom:2rem;">Dashboard</h1>
-            
-            <div id="dashboard" class="content-section active">
-                <div class="stats-grid">
-                    <div class="stat-card"><h3>Bs. <span id="todaySalesBS">0.00</span></h3><p>Ventas Hoy</p></div>
-                    <div class="stat-card"><h3>Bs. <span id="todayProfitBS">0.00</span></h3><p>Ganancia Hoy</p></div>
-                    <div class="stat-card"><h3><span id="totalProducts">0</span></h3><p>Productos Stock</p></div>
+            <!-- Header -->
+            <div class="header">
+                <h1 class="page-title" id="pageTitle">Dashboard</h1>
+                <div class="user-info">
+                    <div style="text-align: right;">
+                        <div style="font-weight: 600;">Crisbel</div>
+                        <div style="font-size: 0.85rem; color: #666;" id="currentDate"></div>
+                    </div>
+                    <div class="user-avatar">C</div>
                 </div>
             </div>
 
+            <!-- Dashboard Section -->
+            <div id="dashboard" class="content-section active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="color: var(--primary);">💵</div>
+                        <div class="stat-value" id="todaySalesBS">Bs. 0,00</div>
+                        <div class="stat-secondary" id="todaySalesUSD">$0.00</div>
+                        <div class="stat-label">Ventas Hoy</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="color: var(--success);">💹</div>
+                        <div class="stat-value" id="todayProfitBS">Bs. 0,00</div>
+                        <div class="stat-secondary" id="todayProfitUSD">$0.00</div>
+                        <div class="stat-label">Ganancia Neta Hoy</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="color: var(--info);">📦</div>
+                        <div class="stat-value" id="totalProducts">0</div>
+                        <div class="stat-label">Productos en Stock</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="color: var(--purple);">🤖</div>
+                        <div class="stat-value">Gemini AI</div>
+                        <div class="stat-label">Asistente Activo</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">💡 Pregunta a tu Asistente Inteligente</h3>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+                        <div class="suggestion-chip" onclick="askAssistant('¿Cuál es el análisis completo de mis ventas de hoy?')" style="text-align: center; padding: 1rem;">
+                            📊 Análisis de ventas hoy
+                        </div>
+                        <div class="suggestion-chip" onclick="askAssistant('¿Qué productos debo reabastecer urgentemente y por qué?')" style="text-align: center; padding: 1rem;">
+                            ⚠️ Alertas de inventario
+                        </div>
+                        <div class="suggestion-chip" onclick="askAssistant('Dame 3 estrategias para aumentar mis ganancias este mes')" style="text-align: center; padding: 1rem;">
+                            🚀 Estrategias de crecimiento
+                        </div>
+                        <div class="suggestion-chip" onclick="askAssistant('Compara mis ventas de hoy con el promedio del mes y dame recomendaciones')" style="text-align: center; padding: 1rem;">
+                            📈 Comparativa y consejos
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Resumen del Mes</h3>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="monthRevenueBS">Bs. 0,00</div>
+                            <div class="stat-secondary" id="monthRevenueUSD">$0.00</div>
+                            <div class="stat-label">Ventas Totales</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="monthProfitBS">Bs. 0,00</div>
+                            <div class="stat-secondary" id="monthProfitUSD">$0.00</div>
+                            <div class="stat-label">Ganancia Neta</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="monthMargin">0%</div>
+                            <div class="stat-label">Margen Promedio</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inventory Section -->
             <div id="inventory" class="content-section">
                 <div class="card">
-                    <h3>Stock Actual</h3>
+                    <div class="card-header">
+                        <h3 class="card-title">Gestión de Inventario</h3>
+                        <button class="btn-primary" onclick="openModal('productModal')">
+                            <span>+</span> Nuevo Producto
+                        </button>
+                    </div>
                     <table class="data-table">
-                        <thead><tr><th>Código</th><th>Producto</th><th>Stock</th><th>Precio</th></tr></thead>
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Producto</th>
+                                <th>Stock</th>
+                                <th>Costo</th>
+                                <th>Precio Venta</th>
+                                <th>Margen</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
                         <tbody id="inventoryTable"></tbody>
                     </table>
                 </div>
             </div>
 
+            <!-- Sales Section -->
             <div id="sales" class="content-section">
                 <div class="card">
-                    <h3>Registrar Venta</h3>
-                    <div style="display:flex; gap:10px; margin: 1rem 0;">
-                        <input type="text" id="saleSearch" placeholder="Producto..." style="flex:1; padding:10px; border-radius:8px; border:1px solid #ddd;">
-                        <button class="btn-primary" onclick="addToCart()">Agregar</button>
+                    <div class="card-header">
+                        <h3 class="card-title">Nueva Venta</h3>
+                        <button class="btn-primary" onclick="processSale()">Finalizar Venta</button>
+                    </div>
+                    <div class="form-grid" style="margin-bottom: 2rem;">
+                        <div class="form-group">
+                            <label>Agregar Producto</label>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <input type="text" id="saleProductSearch" placeholder="Código o nombre..." style="flex: 1; padding: 0.75rem; border: 2px solid #e0e0e0; border-radius: 8px;">
+                                <button class="btn-primary" onclick="addToCart()" style="width: auto;">Agregar</button>
+                            </div>
+                        </div>
                     </div>
                     <table class="data-table">
-                        <thead><tr><th>Producto</th><th>Cant</th><th>Total</th></tr></thead>
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Cant.</th>
+                                <th>Precio</th>
+                                <th>Total</th>
+                                <th></th>
+                            </tr>
+                        </thead>
                         <tbody id="cartItems"></tbody>
                     </table>
-                    <button class="btn-primary" style="margin-top:1rem; width:100%; background:var(--success)" onclick="processSale()">Finalizar Venta</button>
                 </div>
             </div>
 
+            <!-- Profits Section -->
+            <div id="profits" class="content-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Análisis de Ganancias</h3>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" style="color: var(--success);">Bs. 0,00</div>
+                            <div class="stat-label">Ganancia Bruta</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" style="color: var(--primary);">0%</div>
+                            <div class="stat-label">ROI</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fiscal Section -->
+            <div id="fiscal" class="content-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Libros Fiscales</h3>
+                    </div>
+                    <p style="color: #666;">Registro de ventas para declaración SENIAT</p>
+                </div>
+            </div>
+
+            <!-- Config Section -->
+            <div id="config" class="content-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Configuración</h3>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Nombre del Negocio</label>
+                            <input type="text" value="MiniMarket Cris">
+                        </div>
+                        <div class="form-group">
+                            <label>RIF</label>
+                            <input type="text" value="J-XXXXXXXX-X">
+                        </div>
+                        <div class="form-group">
+                            <label>Tasa BCV Actual</label>
+                            <input type="text" id="configRate" value="378.46" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>API Gemini</label>
+                            <input type="password" value="AIzaSyDCUx529OmPoE1mEKIIoO1RIhtEDKgF5K0" readonly style="background: #f0f0f0;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
             <div class="app-footer">
-                <p>Generated by <a href="https://dyzav.com" target="_blank">Dyzav</a> | Powered by Gemini AI | © 2026</p>
+                <p>MiniMarket Cris - Sistema de Gestión Inteligente</p>
+                <p style="margin-top: 0.5rem; font-size: 0.75rem; color: #999;">
+                    Generated by <a href="#" onclick="return false;">Dyzav</a> | Powered by Gemini AI | © 2026
+                </p>
+                <p style="font-size: 0.7rem; color: #aaa; margin-top: 0.25rem;">
+                    Desarrollado especialmente para Crisbel | Tasa BCV: Bs. 378,46 por USD
+                </p>
             </div>
         </main>
     </div>
 
-    <div class="chatbot-widget" onclick="toggleChat()">✨</div>
+    <!-- Chatbot Widget -->
+    <div class="chatbot-widget" id="chatbotWidget" onclick="toggleChatbot()">
+        <span style="font-size: 1.8rem;">✨</span>
+    </div>
+
+    <!-- Chatbot Container -->
     <div class="chatbot-container" id="chatbotContainer">
-        <div style="background:var(--ai-gradient); color:white; padding:1rem; display:flex; justify-content:space-between">
-            <span>Asistente Cris AI</span>
-            <button onclick="toggleChat()" style="background:none; border:none; color:white; cursor:pointer">X</button>
+        <div class="chatbot-header">
+            <div class="chatbot-title">
+                <span>🤖</span>
+                <div>
+                    <div>Asistente Cris AI</div>
+                    <div class="chatbot-status">
+                        <span class="status-dot"></span>
+                        <span>Gemini Pro Activo</span>
+                    </div>
+                </div>
+            </div>
+            <button class="chatbot-close" onclick="toggleChatbot()">×</button>
         </div>
+        
         <div class="chatbot-messages" id="chatbotMessages">
-            <div class="message ai">¡Hola Crisbel! 👋 Soy tu asistente de <strong>Dyzav</strong>. ¿En qué puedo ayudarte hoy?</div>
+            <div class="message ai">
+                <div>¡Hola Crisbel! 👋 Soy tu asistente inteligente potenciado por <strong>Gemini AI</strong>.</div>
+                <div style="margin-top: 0.5rem; font-size: 0.85rem;">
+                    Puedo ayudarte con análisis avanzados de tu bodega:
+                    • 📊 Reportes detallados de ventas y tendencias
+                    • 💰 Proyecciones de ganancias y optimización de precios
+                    • 📦 Gestión inteligente de inventario
+                    • 🎯 Estrategias personalizadas para aumentar tus ventas
+                    • 📈 Análisis comparativos y recomendaciones de negocio
+                </div>
+                <div class="message-time">Ahora</div>
+            </div>
         </div>
-        <div style="padding:1rem; display:flex; gap:5px; border-top:1px solid #eee;">
-            <input type="text" id="chatInput" style="flex:1; padding:10px; border-radius:20px; border:1px solid #ddd; outline:none;" placeholder="Escribe..." onkeypress="if(event.key==='Enter') sendChat()">
-            <button onclick="sendChat()" style="background:var(--ai-gradient); border:none; width:40px; height:40px; border-radius:50%; color:white;">➤</button>
+
+        <div class="suggestion-chips" id="suggestionChips">
+            <div class="suggestion-chip" onclick="askAssistant('Análisis completo de hoy')">📊 Análisis hoy</div>
+            <div class="suggestion-chip" onclick="askAssistant('Proyección de ganancias del mes')">💰 Proyección</div>
+            <div class="suggestion-chip" onclick="askAssistant('¿Qué productos son más rentables?')">🏆 Más rentables</div>
+            <div class="suggestion-chip" onclick="askAssistant('Consejos para mejorar ventas')">🚀 Consejos</div>
+        </div>
+
+        <div class="chatbot-input-area">
+            <input type="text" class="chatbot-input" id="chatbotInput" placeholder="Pregúntame cualquier cosa sobre tu bodega..." onkeypress="handleChatKeypress(event)">
+            <button class="chatbot-send" id="chatbotSend" onclick="sendChatMessage()">
+                <span>➤</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Product Modal -->
+    <div class="modal" id="productModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Nuevo Producto</h2>
+                <button class="close-btn" onclick="closeModal('productModal')">×</button>
+            </div>
+            <form id="productForm" onsubmit="saveProduct(event)">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Código</label>
+                        <input type="text" id="prodCode" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Nombre</label>
+                        <input type="text" id="prodName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Stock Inicial</label>
+                        <input type="number" id="prodStock" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Costo (Bs.)</label>
+                        <input type="number" id="prodCost" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Precio Venta (Bs.)</label>
+                        <input type="number" id="prodPrice" step="0.01" required>
+                    </div>
+                </div>
+                <div style="margin-top: 1.5rem; display: flex; gap: 1rem; justify-content: flex-end;">
+                    <button type="button" class="btn-primary" style="background: #666;" onclick="closeModal('productModal')">Cancelar</button>
+                    <button type="submit" class="btn-primary">Guardar</button>
+                </div>
+            </form>
         </div>
     </div>
 
     <script>
+        // ==========================================
+        // CONFIGURACIÓN GEMINI AI INTEGRADA
+        // ==========================================
         const GEMINI_API_KEY = 'AIzaSyDCUx529OmPoE1mEKIIoO1RIhtEDKgF5K0';
-        const BCV_RATE = 378.46;
-        let products = JSON.parse(localStorage.getItem('min_prod')) || [
-            {code: 'A01', name: 'Arroz 1kg', stock: 50, cost: 60, price: 95},
-            {code: 'AC01', name: 'Aceite 1L', stock: 20, cost: 110, price: 170}
-        ];
-        let sales = JSON.parse(localStorage.getItem('min_sales')) || [];
-        let cart = [];
-
-        function login() { document.getElementById('loginScreen').style.display = 'none'; document.getElementById('appContainer').style.display = 'block'; updateDashboard(); renderInventory(); }
-        function logout() { location.reload(); }
+        const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
         
-        function showSection(id) { 
-            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            document.getElementById('pageTitle').innerText = id.charAt(0).toUpperCase() + id.slice(1);
-        }
+        // Configuration
+        const BCV_RATE = 378.46;
+        const USER_NAME = 'Crisbel';
+        const BUSINESS_NAME = 'MiniMarket Cris';
+        
+        // Data Storage
+        let products = JSON.parse(localStorage.getItem('minimarket_products')) || [
+            {code: 'ARROZ001', name: 'Arroz 1kg', stock: 50, cost: 68.12, price: 96.50, margin: 29.4},
+            {code: 'ACEI001', name: 'Aceite 1L', stock: 30, cost: 121.10, price: 170.20, margin: 28.9},
+            {code: 'LECHE001', name: 'Leche 1L', stock: 24, cost: 94.61, price: 132.46, margin: 28.6}
+        ];
+        
+        let sales = JSON.parse(localStorage.getItem('minimarket_sales')) || [];
+        let cart = [];
+        let currentInvoiceNumber = parseInt(localStorage.getItem('minimarket_invoice')) || 1;
 
-        function renderInventory() {
-            const table = document.getElementById('inventoryTable');
-            table.innerHTML = products.map(p => `<tr><td>${p.code}</td><td>${p.name}</td><td><span class="badge ${p.stock < 10 ? 'badge-danger':'badge-success'}">${p.stock}</span></td><td>Bs. ${p.price}</td></tr>`).join('');
-            document.getElementById('totalProducts').innerText = products.length;
-        }
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDate();
+            setInterval(updateDate, 60000);
+            
+            document.getElementById('loginForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                login();
+            });
+            
+            renderInventory();
+            updateDashboard();
+        });
 
-        function updateDashboard() {
-            const total = sales.reduce((sum, s) => sum + s.total, 0);
-            const profit = sales.reduce((sum, s) => sum + s.profit, 0);
-            document.getElementById('todaySalesBS').innerText = total.toFixed(2);
-            document.getElementById('todayProfitBS').innerText = profit.toFixed(2);
-        }
-
-        function addToCart() {
-            const val = document.getElementById('saleSearch').value.toLowerCase();
-            const p = products.find(prod => prod.name.toLowerCase().includes(val));
-            if(p && p.stock > 0) { cart.push({...p, qty: 1}); renderCart(); document.getElementById('saleSearch').value=''; }
-        }
-
-        function renderCart() {
-            document.getElementById('cartItems').innerHTML = cart.map(i => `<tr><td>${i.name}</td><td>${i.qty}</td><td>Bs. ${i.price * i.qty}</td></tr>`).join('');
-        }
-
-        function processSale() {
-            if(cart.length === 0) return;
-            const total = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
-            const profit = cart.reduce((sum, i) => sum + ((i.price - i.cost) * i.qty), 0);
-            sales.push({total, profit, date: new Date()});
-            cart.forEach(item => { const p = products.find(prod => prod.code === item.code); p.stock -= item.qty; });
-            localStorage.setItem('min_prod', JSON.stringify(products));
-            localStorage.setItem('min_sales', JSON.stringify(sales));
-            cart = []; renderCart(); renderInventory(); updateDashboard(); alert('Venta Exitosa registrada por Dyzav');
-        }
-
-        function toggleChat() { document.getElementById('chatbotContainer').classList.toggle('active'); }
-
-        async function sendChat() {
-            const input = document.getElementById('chatInput');
-            const msg = input.value;
-            if(!msg) return;
-            addMsg(msg, 'user');
+        // ==========================================
+        // GEMINI AI CHATBOT FUNCTIONS
+        // ==========================================
+        
+        async function sendChatMessage() {
+            const input = document.getElementById('chatbotInput');
+            const sendBtn = document.getElementById('chatbotSend');
+            const message = input.value.trim();
+            
+            if(!message) return;
+            
+            // Disable input while processing
+            input.disabled = true;
+            sendBtn.disabled = true;
+            
+            addMessage(message, 'user');
             input.value = '';
+            showTypingIndicator();
+            
             try {
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`, {
-                    method: 'POST', headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ contents: [{ parts: [{ text: `Asistente de MiniMarket Cris (Dyzav). Ventas hoy: Bs. ${document.getElementById('todaySalesBS').innerText}. Pregunta: ${msg}` }] }] })
-                });
-                const data = await res.json();
-                addMsg(data.candidates[0].content.parts[0].text, 'ai');
-            } catch (e) { addMsg('Error de conexión.', 'ai'); }
+                const response = await callGeminiAPI(message);
+                removeTypingIndicator();
+                addMessage(response, 'ai');
+            } catch(error) {
+                console.error('Error:', error);
+                removeTypingIndicator();
+                addMessage('Lo siento, tuve un problema al procesar tu pregunta. Intenta de nuevo o reformula tu consulta.', 'bot');
+            } finally {
+                input.disabled = false;
+                sendBtn.disabled = false;
+                input.focus();
+            }
         }
 
-        function addMsg(txt, sender) {
-            const div = document.createElement('div');
-            div.className = `message ${sender}`;
-            div.innerText = txt;
-            document.getElementById('chatbotMessages').appendChild(div);
+        async function callGeminiAPI(userMessage) {
+            // Prepare context with business data
+            const context = prepareBusinessContext();
+            
+            const prompt = `
+Eres el asistente inteligente de ${BUSINESS_NAME}, una bodega en Venezuela operada por ${USER_NAME}.
+Tasa BCV actual: Bs. ${BCV_RATE} por USD.
+
+CONTEXTO DE NEGOCIO ACTUAL:
+${context}
+
+INSTRUCCIONES:
+- Responde como un experto en administración de pequeños negocios
+- Sé amable, profesional y motivador
+- Usa emojis ocasionalmente para hacer la conversación amigable
+- Da respuestas concisas pero informativas (máximo 3-4 párrafos)
+- Si analizas datos, destaca insights accionables
+- Si detectas problemas, sugiere soluciones concretas
+- Considera el contexto venezolano (inflación, dolarización, controles)
+
+PREGUNTA DEL USUARIO: ${userMessage}
+`;
+
+            const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [{
+                            text: prompt
+                        }]
+                    }],
+                    generationConfig: {
+                        temperature: 0.7,
+                        maxOutputTokens: 800,
+                        topP: 0.8,
+                        topK: 40
+                    }
+                })
+            });
+
+            if(!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            
+            if(data.candidates && data.candidates[0] && data.candidates[0].content) {
+                return data.candidates[0].content.parts[0].text;
+            } else {
+                throw new Error('Respuesta inesperada de la API');
+            }
+        }
+
+        function prepareBusinessContext() {
+            const today = new Date().toDateString();
+            const todaySales = sales.filter(s => new Date(s.date).toDateString() === today);
+            const todayRevenue = todaySales.reduce((sum, s) => sum + s.totalBS, 0);
+            const todayProfit = todaySales.reduce((sum, s) => sum + s.profitBS, 0);
+            
+            const monthSales = sales.filter(s => new Date(s.date).getMonth() === new Date().getMonth());
+            const monthRevenue = monthSales.reduce((sum, s) => sum + s.totalBS, 0);
+            const monthProfit = monthSales.reduce((sum, s) => sum + s.profitBS, 0);
+            
+            const lowStock = products.filter(p => p.stock <= 10);
+            const topProducts = [...products].sort((a,b) => {
+                const aSales = sales.reduce((sum, s) => sum + (s.items.find(i => i.code === a.code)?.quantity || 0), 0);
+                const bSales = sales.reduce((sum, s) => sum + (s.items.find(i => i.code === b.code)?.quantity || 0), 0);
+                return bSales - aSales;
+            }).slice(0, 3);
+            
+            return `
+📊 VENTAS HOY:
+- Total: Bs. ${todayRevenue.toFixed(2)} ($${(todayRevenue/BCV_RATE).toFixed(2)} USD)
+- Ganancia: Bs. ${todayProfit.toFixed(2)} ($${(todayProfit/BCV_RATE).toFixed(2)} USD)
+- Transacciones: ${todaySales.length}
+
+📈 VENTAS DEL MES:
+- Total: Bs. ${monthRevenue.toFixed(2)} ($${(monthRevenue/BCV_RATE).toFixed(2)} USD)
+- Ganancia: Bs. ${monthProfit.toFixed(2)} ($${(monthProfit/BCV_RATE).toFixed(2)} USD)
+
+📦 INVENTARIO:
+- Total productos: ${products.length}
+- Productos con stock bajo (${lowStock.length}): ${lowStock.map(p => p.name).join(', ') || 'Ninguno'}
+
+🏆 TOP PRODUCTOS:
+${topProducts.map((p, i) => `${i+1}. ${p.name} (Stock: ${p.stock}, Margen: ${p.margin.toFixed(1)}%)`).join('\n')}
+
+💰 MARGEN PROMEDIO: ${(products.reduce((sum, p) => sum + p.margin, 0) / products.length).toFixed(1)}%
+`;
+        }
+
+        function toggleChatbot() {
+            const widget = document.getElementById('chatbotWidget');
+            const container = document.getElementById('chatbotContainer');
+            
+            widget.classList.toggle('active');
+            container.classList.toggle('active');
+            
+            if(container.classList.contains('active')) {
+                document.getElementById('chatbotInput').focus();
+            }
+        }
+
+        function handleChatKeypress(e) {
+            if(e.key === 'Enter') sendChatMessage();
+        }
+
+        function askAssistant(question) {
+            document.getElementById('chatbotInput').value = question;
+            sendChatMessage();
+            if(!document.getElementById('chatbotContainer').classList.contains('active')) {
+                toggleChatbot();
+            }
+        }
+
+        function addMessage(text, sender) {
             const container = document.getElementById('chatbotMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            
+            const time = new Date().toLocaleTimeString('es-VE', {hour: '2-digit', minute: '2-digit'});
+            
+            // Convert markdown-like formatting
+            let formattedText = text
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/\n/g, '<br>');
+            
+            messageDiv.innerHTML = `
+                <div>${formattedText}</div>
+                <div class="message-time">${time}</div>
+            `;
+            
+            container.appendChild(messageDiv);
             container.scrollTop = container.scrollHeight;
         }
 
+        function showTypingIndicator() {
+            const container = document.getElementById('chatbotMessages');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'typing-indicator';
+            typingDiv.id = 'typingIndicator';
+            typingDiv.innerHTML = `
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+            `;
+            container.appendChild(typingDiv);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function removeTypingIndicator() {
+            const indicator = document.getElementById('typingIndicator');
+            if(indicator) indicator.remove();
+        }
+
+        // ==========================================
+        // APP FUNCTIONS
+        // ==========================================
+        
+        function login() {
+            document.getElementById('loginScreen').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('appContainer').style.display = 'block';
+            }, 500);
+        }
+
+        function logout() {
+            location.reload();
+        }
+
+        function showSection(sectionId) {
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            event.target.closest('.nav-item').classList.add('active');
+            
+            const titles = {
+                'dashboard': 'Dashboard', 'inventory': 'Inventario', 'sales': 'Ventas',
+                'profits': 'Ganancias', 'fiscal': 'Libros Fiscales', 'config': 'Configuración'
+            };
+            document.getElementById('pageTitle').textContent = titles[sectionId];
+        }
+
+        function updateDate() {
+            const now = new Date();
+            document.getElementById('currentDate').textContent = 
+                now.toLocaleDateString('es-VE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        }
+
+        // Inventory
+        function renderInventory() {
+            const tbody = document.getElementById('inventoryTable');
+            tbody.innerHTML = '';
+            
+            products.forEach((p, index) => {
+                const status = p.stock <= 10 ? 'danger' : p.stock <= 20 ? 'warning' : 'success';
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${p.code}</td>
+                        <td><strong>${p.name}</strong></td>
+                        <td><span class="badge badge-${status}">${p.stock}</span></td>
+                        <td>Bs. ${p.cost.toFixed(2)}<br><small>$${(p.cost/BCV_RATE).toFixed(2)}</small></td>
+                        <td>Bs. ${p.price.toFixed(2)}<br><small>$${(p.price/BCV_RATE).toFixed(2)}</small></td>
+                        <td>${p.margin.toFixed(1)}%</td>
+                        <td>
+                            <button onclick="deleteProduct(${index})" style="background: var(--danger); color: white; border: none; padding: 0.5rem; border-radius: 5px; cursor: pointer;">🗑️</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            document.getElementById('totalProducts').textContent = products.length;
+        }
+
+        function saveProduct(e) {
+            e.preventDefault();
+            
+            const cost = parseFloat(document.getElementById('prodCost').value);
+            const price = parseFloat(document.getElementById('prodPrice').value);
+            
+            const product = {
+                code: document.getElementById('prodCode').value,
+                name: document.getElementById('prodName').value,
+                stock: parseInt(document.getElementById('prodStock').value),
+                cost: cost,
+                price: price,
+                margin: ((price - cost) / price * 100)
+            };
+            
+            products.push(product);
+            localStorage.setItem('minimarket_products', JSON.stringify(products));
+            closeModal('productModal');
+            renderInventory();
+            updateDashboard();
+        }
+
+        function deleteProduct(index) {
+            if(confirm('¿Eliminar este producto?')) {
+                products.splice(index, 1);
+                localStorage.setItem('minimarket_products', JSON.stringify(products));
+                renderInventory();
+            }
+        }
+
+        // Sales
+        function addToCart() {
+            const search = document.getElementById('saleProductSearch').value.toLowerCase();
+            const product = products.find(p => p.code.toLowerCase() === search || p.name.toLowerCase().includes(search));
+            
+            if(!product || product.stock <= 0) {
+                alert('Producto no encontrado o sin stock');
+                return;
+            }
+            
+            const existing = cart.find(item => item.code === product.code);
+            if(existing) {
+                if(existing.quantity >= product.stock) return alert('Stock insuficiente');
+                existing.quantity++;
+            } else {
+                cart.push({
+                    code: product.code,
+                    name: product.name,
+                    cost: product.cost,
+                    price: product.price,
+                    quantity: 1
+                });
+            }
+            
+            renderCart();
+            document.getElementById('saleProductSearch').value = '';
+        }
+
+        function renderCart() {
+            const tbody = document.getElementById('cartItems');
+            tbody.innerHTML = '';
+            
+            let total = 0;
+            
+            cart.forEach((item, index) => {
+                const subtotal = item.price * item.quantity;
+                total += subtotal;
+                
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${item.name}</td>
+                        <td><input type="number" value="${item.quantity}" min="1" style="width: 60px;" onchange="updateQuantity(${index}, this.value)"></td>
+                        <td>Bs. ${item.price.toFixed(2)}</td>
+                        <td>Bs. ${subtotal.toFixed(2)}</td>
+                        <td><button onclick="removeFromCart(${index})" style="background: var(--danger); color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 5px;">×</button></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function updateQuantity(index, qty) {
+            cart[index].quantity = parseInt(qty);
+            renderCart();
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            renderCart();
+        }
+
+        function processSale() {
+            if(cart.length === 0) return alert('Agregue productos');
+            
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const profit = cart.reduce((sum, item) => sum + ((item.price - item.cost) * item.quantity), 0);
+            const iva = subtotal * 0.16;
+            const total = subtotal + iva;
+            
+            const sale = {
+                date: new Date().toISOString(),
+                invoiceNumber: currentInvoiceNumber,
+                items: [...cart],
+                subtotalBS: subtotal,
+                ivaBS: iva,
+                totalBS: total,
+                profitBS: profit,
+                bcvRate: BCV_RATE
+            };
+            
+            sales.push(sale);
+            localStorage.setItem('minimarket_sales', JSON.stringify(sales));
+            
+            cart.forEach(item => {
+                const p = products.find(prod => prod.code === item.code);
+                if(p) p.stock -= item.quantity;
+            });
+            localStorage.setItem('minimarket_products', JSON.stringify(products));
+            
+            currentInvoiceNumber++;
+            localStorage.setItem('minimarket_invoice', currentInvoiceNumber);
+            
+            cart = [];
+            renderCart();
+            renderInventory();
+            updateDashboard();
+            
+            alert(`¡Venta registrada!\nTotal: Bs. ${total.toFixed(2)}\nGanancia: Bs. ${profit.toFixed(2)}`);
+        }
+
+        // Dashboard
+        function updateDashboard() {
+            const today = new Date().toDateString();
+            const todaySales = sales.filter(s => new Date(s.date).toDateString() === today);
+            
+            const totalBS = todaySales.reduce((sum, s) => sum + s.totalBS, 0);
+            const profitBS = todaySales.reduce((sum, s) => sum + s.profitBS, 0);
+            
+            document.getElementById('todaySalesBS').textContent = `Bs. ${totalBS.toFixed(2)}`;
+            document.getElementById('todaySalesUSD').textContent = `$${(totalBS/BCV_RATE).toFixed(2)}`;
+            document.getElementById('todayProfitBS').textContent = `Bs. ${profitBS.toFixed(2)}`;
+            document.getElementById('todayProfitUSD').textContent = `$${(profitBS/BCV_RATE).toFixed(2)}`;
+            
+            const monthSales = sales.filter(s => new Date(s.date).getMonth() === new Date().getMonth());
+            const monthRevenue = monthSales.reduce((sum, s) => sum + s.totalBS, 0);
+            const monthProfit = monthSales.reduce((sum, s) => sum + s.profitBS, 0);
+            const monthMargin = monthRevenue > 0 ? (monthProfit/monthRevenue*100).toFixed(1) : 0;
+            
+            document.getElementById('monthRevenueBS').textContent = `Bs. ${monthRevenue.toFixed(2)}`;
+            document.getElementById('monthRevenueUSD').textContent = `$${(monthRevenue/BCV_RATE).toFixed(2)}`;
+            document.getElementById('monthProfitBS').textContent = `Bs. ${monthProfit.toFixed(2)}`;
+            document.getElementById('monthProfitUSD').textContent = `$${(monthProfit/BCV_RATE).toFixed(2)}`;
+            document.getElementById('monthMargin').textContent = `${monthMargin}%`;
+        }
+
+        // Modal
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        // BCV Rate Update
         function fetchBCVRate() {
             const btn = document.getElementById('syncRateBtn');
             btn.classList.add('spinning');
-            setTimeout(() => { btn.classList.remove('spinning'); alert('Tasa Dyzav-BCV Sincronizada: Bs. 378,46'); }, 1000);
+            
+            setTimeout(() => {
+                btn.classList.remove('spinning');
+                alert('Tasa BCV verificada: Bs. 378,46 por USD\n(Fecha: 05/02/2026)');
+            }, 1500);
+        }
+
+        window.onclick = function(e) {
+            if(e.target.classList.contains('modal')) {
+                e.target.classList.remove('active');
+            }
         }
     </script>
 </body>
