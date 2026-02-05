@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MiniMarket Cris - Sistema Completo Dyzav</title>
+    <title>MiniMarket Cris - Sistema Enterprise Dyzav</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
@@ -17,7 +17,6 @@
             --danger: #E74C3C;
             --warning: #F39C12;
             --info: #3498DB;
-            --purple: #9B59B6;
             --light: #F8F9FA;
             --dark: #2C3E50;
             --gradient: linear-gradient(135deg, #FF6B35 0%, #F7C59F 100%);
@@ -322,7 +321,7 @@
                         <div style="margin-bottom:1rem"><button class="btn-primary" onclick="openModal('saleEntryModal')">+ Venta Manual</button></div>
                         <div class="table-wrapper">
                             <table class="data-table">
-                                <thead><tr><th>Fecha</th><th>Factura</th><th>Cliente</th><th>Total</th></tr></thead>
+                                <thead><tr><th>Fecha</th><th>Factura</th><th>Cliente</th><th>RIF</th><th>Total</th></tr></thead>
                                 <tbody id="salesBookBody"></tbody>
                             </table>
                         </div>
@@ -332,7 +331,7 @@
                         <div style="margin-bottom:1rem"><button class="btn-primary" onclick="openModal('purchaseEntryModal')">+ Compra</button></div>
                         <div class="table-wrapper">
                             <table class="data-table">
-                                <thead><tr><th>Fecha</th><th>Prov</th><th>Factura</th><th>Total</th></tr></thead>
+                                <thead><tr><th>Fecha</th><th>Proveedor</th><th>RIF</th><th>Factura</th><th>Total</th></tr></thead>
                                 <tbody id="purchasesBookBody"></tbody>
                             </table>
                         </div>
@@ -340,9 +339,9 @@
 
                     <div id="summary" class="fiscal-content">
                         <div class="summary-cards" style="display:grid; grid-template-columns: repeat(2, 1fr); gap:1rem;">
-                            <div class="stat-card"><h4>Débito Fiscal</h4><div class="value" id="ivaDebit">Bs. 0</div></div>
-                            <div class="stat-card"><h4>Crédito Fiscal</h4><div class="value" id="ivaCredit">Bs. 0</div></div>
-                            <div class="stat-card"><h4>A Pagar</h4><div class="value" id="ivaPayable" style="color:var(--danger)">Bs. 0</div></div>
+                            <div class="stat-card"><h4>Débito Fiscal (Ventas)</h4><div class="value" id="ivaDebit">Bs. 0</div></div>
+                            <div class="stat-card"><h4>Crédito Fiscal (Compras)</h4><div class="value" id="ivaCredit">Bs. 0</div></div>
+                            <div class="stat-card"><h4>IVA A Pagar</h4><div class="value" id="ivaPayable" style="color:var(--danger)">Bs. 0</div></div>
                         </div>
                     </div>
                 </div>
@@ -361,7 +360,7 @@
         </div>
         <div style="padding:1rem; border-top:1px solid #eee; display:flex; gap:0.5rem">
             <input type="text" id="chatInput" placeholder="Escribe..." style="flex:1; padding:10px; border:1px solid #ddd; border-radius:20px; outline:none">
-            <button onclick="sendChat()" style="width:40px; height:40px; background:var(--ai-gradient); color:white; border:none; border-radius:50%">➤</button>
+            <button id="sendBtn" onclick="sendChat()" style="width:40px; height:40px; background:var(--ai-gradient); color:white; border:none; border-radius:50%">➤</button>
         </div>
     </div>
 
@@ -375,8 +374,8 @@
                     <div class="form-group"><label>Código</label><input type="text" id="prodCode" required></div>
                     <div class="form-group"><label>Nombre</label><input type="text" id="prodName" required></div>
                     <div class="form-group"><label>Stock</label><input type="number" id="prodStock" required></div>
-                    <div class="form-group"><label>Costo</label><input type="number" id="prodCost" required></div>
-                    <div class="form-group"><label>Precio</label><input type="number" id="prodPrice" required></div>
+                    <div class="form-group"><label>Costo</label><input type="number" id="prodCost" step="0.01" required></div>
+                    <div class="form-group"><label>Precio</label><input type="number" id="prodPrice" step="0.01" required></div>
                 </div>
                 <button type="submit" class="btn-primary" style="margin-top:1rem">Guardar</button>
             </form>
@@ -385,26 +384,36 @@
 
     <div class="modal" id="saleEntryModal">
         <div class="modal-content">
-            <h2>Venta Fiscal</h2>
+            <div style="margin-bottom: 1.5rem; display:flex; justify-content:space-between">
+                <h2>Registrar Venta Fiscal</h2><button onclick="closeModal('saleEntryModal')" style="border:none; background:none; font-size:1.5rem">&times;</button>
+            </div>
             <form onsubmit="saveFiscalSale(event)">
-                <input type="date" id="fiscalSaleDate" required style="width:100%; margin:10px 0; padding:10px;">
-                <input type="text" id="fiscalSaleInvoice" placeholder="Factura" required style="width:100%; margin:10px 0; padding:10px;">
-                <input type="number" id="fiscalSaleAmount" placeholder="Monto Total" required style="width:100%; margin:10px 0; padding:10px;">
-                <button class="btn-primary">Guardar</button>
-                <button type="button" onclick="closeModal('saleEntryModal')" style="margin-left:10px">Cancelar</button>
+                <div class="form-grid">
+                    <div class="form-group"><label>Fecha</label><input type="date" id="fiscalSaleDate" required></div>
+                    <div class="form-group"><label>N° Factura</label><input type="text" id="fiscalSaleInvoice" placeholder="001-00001" required></div>
+                    <div class="form-group"><label>Cliente</label><input type="text" id="fiscalSaleClient" required></div>
+                    <div class="form-group"><label>RIF/CI</label><input type="text" id="fiscalSaleRIF" required></div>
+                    <div class="form-group"><label>Monto Total</label><input type="number" step="0.01" id="fiscalSaleAmount" required></div>
+                </div>
+                <button class="btn-primary" style="margin-top:1rem">Guardar en Libro</button>
             </form>
         </div>
     </div>
 
     <div class="modal" id="purchaseEntryModal">
         <div class="modal-content">
-            <h2>Compra Fiscal</h2>
+            <div style="margin-bottom: 1.5rem; display:flex; justify-content:space-between">
+                <h2>Registrar Compra</h2><button onclick="closeModal('purchaseEntryModal')" style="border:none; background:none; font-size:1.5rem">&times;</button>
+            </div>
             <form onsubmit="saveFiscalPurchase(event)">
-                <input type="date" id="fiscalPurchaseDate" required style="width:100%; margin:10px 0; padding:10px;">
-                <input type="text" id="fiscalPurchaseVendor" placeholder="Proveedor" required style="width:100%; margin:10px 0; padding:10px;">
-                <input type="number" id="fiscalPurchaseAmount" placeholder="Monto Total" required style="width:100%; margin:10px 0; padding:10px;">
-                <button class="btn-primary">Guardar</button>
-                <button type="button" onclick="closeModal('purchaseEntryModal')" style="margin-left:10px">Cancelar</button>
+                <div class="form-grid">
+                    <div class="form-group"><label>Fecha</label><input type="date" id="fiscalPurchaseDate" required></div>
+                    <div class="form-group"><label>N° Factura</label><input type="text" id="fiscalPurchaseInvoice" required></div>
+                    <div class="form-group"><label>Proveedor</label><input type="text" id="fiscalPurchaseVendor" required></div>
+                    <div class="form-group"><label>RIF</label><input type="text" id="fiscalPurchaseRIF" required></div>
+                    <div class="form-group"><label>Monto Total</label><input type="number" step="0.01" id="fiscalPurchaseAmount" required></div>
+                </div>
+                <button class="btn-primary" style="margin-top:1rem">Guardar en Libro</button>
             </form>
         </div>
     </div>
@@ -412,35 +421,36 @@
     <script>
         // CONFIGURACIÓN DYZAV
         const GEMINI_API_KEY = 'AIzaSyAj-nK6iC2Yb656r2mul8FoclOwiYzJvv8'; 
-        const GEMINI_MODEL = 'gemini-2.0-flash'; // Modelo estable 2026
+        // USAMOS 2.0 FLASH PORQUE ES EL MÁS ESTABLE HOY
+        const GEMINI_MODEL = 'gemini-2.0-flash'; 
         const BCV_RATE = 378.46;
 
         // VARIABLES GRÁFICAS
         let salesChartInstance = null;
         let profitsChartInstance = null;
 
-        // INICIALIZACIÓN DE PRODUCTOS (LISTA COMPLETA 20 ITEMS RESTAURADA)
+        // INICIALIZACIÓN DE PRODUCTOS (LISTA COMPLETA 20 ITEMS)
         let products = JSON.parse(localStorage.getItem('min_prod')) || [
-            {code: 'ARROZ001', name: 'Arroz Precocido Mary 1kg', stock: 45, cost: 68.12, price: 96.50},
-            {code: 'ARROZ002', name: 'Arroz Integral Mary 1kg', stock: 32, cost: 72.50, price: 102.00},
-            {code: 'ACEI001', name: 'Aceite Vegetal Mazeite 1L', stock: 28, cost: 121.10, price: 170.20},
-            {code: 'ACEI002', name: 'Aceite de Oliva 500ml', stock: 15, cost: 189.50, price: 265.00},
-            {code: 'LECHE001', name: 'Leche Entera Parmalat 1L', stock: 56, cost: 94.61, price: 132.46},
-            {code: 'LECHE002', name: 'Leche Descremada 1L', stock: 34, cost: 96.20, price: 135.00},
-            {code: 'HARA001', name: 'Harina de Maíz Pan 1kg', stock: 78, cost: 52.30, price: 73.50},
-            {code: 'HARA002', name: 'Harina de Trigo Robin Hood 1kg', stock: 42, cost: 58.90, price: 82.50},
-            {code: 'AZUC001', name: 'Azúcar Refinada Central 1kg', stock: 67, cost: 45.80, price: 64.50},
-            {code: 'CAFE001', name: 'Café Molido Madrid 250g', stock: 23, cost: 156.40, price: 219.00},
-            {code: 'PAST001', name: 'Pasta Spaghetti De Cecco 500g', stock: 38, cost: 89.50, price: 125.50},
-            {code: 'ATUN001', name: 'Atún en Lata Gomes da Costa 170g', stock: 52, cost: 67.80, price: 95.00},
-            {code: 'SALS001', name: 'Salsa de Tomate Heinz 397g', stock: 41, cost: 78.90, price: 110.50},
-            {code: 'MAYO001', name: 'Mayonesa Kraft 445g', stock: 29, cost: 95.60, price: 134.00},
-            {code: 'CERV001', name: 'Cerveza Polar 355ml (Six Pack)', stock: 18, cost: 245.80, price: 345.00},
-            {code: 'REFR001', name: 'Refresco Coca-Cola 2L', stock: 24, cost: 112.50, price: 158.00},
-            {code: 'AGUA001', name: 'Agua Mineral 1.5L', stock: 89, cost: 28.50, price: 40.00},
-            {code: 'JABO001', name: 'Jabón en Polvo Ace 1kg', stock: 12, cost: 145.60, price: 204.50},
-            {code: 'PAPE001', name: 'Papel Higiénico Scott 4 rollos', stock: 37, cost: 89.90, price: 126.00},
-            {code: 'DENT001', name: 'Pasta Dental Colgate 75ml', stock: 44, cost: 56.70, price: 79.50}
+            {code: 'A01', name: 'Arroz Mary 1kg', stock: 45, cost: 65, price: 95},
+            {code: 'AC01', name: 'Aceite Mazeite 1L', stock: 12, cost: 110, price: 165},
+            {code: 'H01', name: 'Harina PAN 1kg', stock: 80, cost: 45, price: 72},
+            {code: 'L01', name: 'Leche Parmalat 1L', stock: 56, cost: 94, price: 132},
+            {code: 'P01', name: 'Pasta Primor 500g', stock: 38, cost: 50, price: 80},
+            {code: 'C01', name: 'Café Madrid 250g', stock: 23, cost: 150, price: 210},
+            {code: 'M01', name: 'Mayonesa Mavesa', stock: 29, cost: 90, price: 130},
+            {code: 'S01', name: 'Salsa Tomate', stock: 41, cost: 75, price: 110},
+            {code: 'AT01', name: 'Atún Margarita', stock: 52, cost: 65, price: 95},
+            {code: 'AZ01', name: 'Azúcar Montalban', stock: 67, cost: 45, price: 65},
+            {code: 'CERV01', name: 'Cerveza Polar', stock: 120, cost: 25, price: 35},
+            {code: 'JAB01', name: 'Jabón Las Llaves', stock: 40, cost: 30, price: 45},
+            {code: 'PAP01', name: 'Papel Higiénico 4r', stock: 60, cost: 55, price: 80},
+            {code: 'DEN01', name: 'Pasta Dental Colgate', stock: 35, cost: 40, price: 60},
+            {code: 'REF01', name: 'Refresco CocaCola 2L', stock: 24, cost: 60, price: 90},
+            {code: 'AGU01', name: 'Agua Minalba 5L', stock: 15, cost: 45, price: 70},
+            {code: 'GAL01', name: 'Galletas Maria', stock: 50, cost: 28, price: 42},
+            {code: 'MAN01', name: 'Mantequilla Mavesa', stock: 30, cost: 55, price: 85},
+            {code: 'QUE01', name: 'Queso Duro (Kg)', stock: 10, cost: 180, price: 250},
+            {code: 'JAM01', name: 'Jamón Pierna (Kg)', stock: 8, cost: 220, price: 310}
         ];
 
         // DATOS FISCALES DE EJEMPLO
@@ -453,16 +463,29 @@
             const today = new Date();
             // Generar también datos fiscales de prueba si están vacíos
             if(fiscalSales.length === 0) {
-                for(let i=0; i<10; i++) {
+                for(let i=0; i<15; i++) {
                     fiscalSales.push({
                         date: new Date(today.getTime() - i*86400000).toISOString().split('T')[0],
                         invoiceNumber: `001-${1000+i}`,
                         client: 'Consumidor Final',
                         rif: 'V-00000000',
-                        total: Math.random()*500 + 100
+                        total: Math.floor(Math.random()*500 + 100)
                     });
                 }
                 localStorage.setItem('min_fiscal_sales', JSON.stringify(fiscalSales));
+            }
+            // Generar compras
+            if(fiscalPurchases.length === 0) {
+                for(let i=0; i<5; i++) {
+                    fiscalPurchases.push({
+                        date: new Date(today.getTime() - i*100000000).toISOString().split('T')[0],
+                        invoiceNumber: `FAC-${500+i}`,
+                        vendor: 'Distribuidora Polar',
+                        rif: 'J-00000000',
+                        total: Math.floor(Math.random()*2000 + 500)
+                    });
+                }
+                localStorage.setItem('min_fiscal_purchases', JSON.stringify(fiscalPurchases));
             }
 
             for(let i = 0; i < 45; i++) {
@@ -516,8 +539,7 @@
             if(u === 'crisbel' && p === 'crisbel2026') {
                 document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('appContainer').style.display = 'block';
-                updateDashboard(); 
-                renderProfits();
+                updateDashboard(); renderProfits(); // Refrescar gráficos
             } else { alert('Credenciales incorrectas'); }
         }
 
@@ -731,11 +753,11 @@
         function renderFiscal() {
             // Libro ventas
             const salesBody = document.getElementById('salesBookBody');
-            salesBody.innerHTML = fiscalSales.map(s => `<tr><td>${s.date}</td><td>${s.invoiceNumber}</td><td>${s.client}</td><td>${s.total.toFixed(2)}</td></tr>`).join('');
+            salesBody.innerHTML = fiscalSales.map(s => `<tr><td>${s.date}</td><td>${s.invoiceNumber}</td><td>${s.client}</td><td>${s.rif}</td><td>${s.total.toFixed(2)}</td></tr>`).join('');
             
             // Libro compras
             const purchBody = document.getElementById('purchasesBookBody');
-            purchBody.innerHTML = fiscalPurchases.map(p => `<tr><td>${p.date}</td><td>${p.vendor}</td><td>${p.invoiceNumber}</td><td>${p.total.toFixed(2)}</td></tr>`).join('');
+            purchBody.innerHTML = fiscalPurchases.map(p => `<tr><td>${p.date}</td><td>${p.vendor}</td><td>${p.rif}</td><td>${p.invoiceNumber}</td><td>${p.total.toFixed(2)}</td></tr>`).join('');
 
             // Resumen (Simplificado)
             const deb = fiscalSales.reduce((a,b)=>a+(b.total*0.16),0);
@@ -757,7 +779,8 @@
             fiscalSales.unshift({
                 date: document.getElementById('fiscalSaleDate').value,
                 invoiceNumber: document.getElementById('fiscalSaleInvoice').value,
-                client: 'Consumidor', // Simplificado
+                client: document.getElementById('fiscalSaleClient').value,
+                rif: document.getElementById('fiscalSaleRIF').value,
                 total: parseFloat(document.getElementById('fiscalSaleAmount').value)
             });
             localStorage.setItem('min_fiscal_sales', JSON.stringify(fiscalSales));
@@ -769,7 +792,8 @@
             fiscalPurchases.unshift({
                 date: document.getElementById('fiscalPurchaseDate').value,
                 vendor: document.getElementById('fiscalPurchaseVendor').value,
-                invoiceNumber: 'PROV-00X', 
+                rif: document.getElementById('fiscalPurchaseRIF').value,
+                invoiceNumber: document.getElementById('fiscalPurchaseInvoice').value,
                 total: parseFloat(document.getElementById('fiscalPurchaseAmount').value)
             });
             localStorage.setItem('min_fiscal_purchases', JSON.stringify(fiscalPurchases));
@@ -779,7 +803,7 @@
         function downloadFiscal() { alert('Descargando CSV...'); }
         function fetchBCVRate() { alert('BCV: Bs. 378,46'); }
 
-        // CHATBOT LOGIC
+        // CHATBOT LOGIC (REPARADA)
         function toggleChat() {
             const chat = document.getElementById('chatContainer');
             chat.style.display = chat.style.display === 'flex' ? 'none' : 'flex';
@@ -787,12 +811,16 @@
 
         async function sendChat() {
             const input = document.getElementById('chatInput');
+            const btn = document.getElementById('sendBtn');
             const msg = input.value.trim();
             if(!msg) return;
 
+            // UI
             const div = document.createElement('div'); div.className = 'message user'; div.innerText = msg;
             document.getElementById('chatMessages').appendChild(div);
             input.value = '';
+            input.disabled = true; // Bloquear mientras piensa
+            btn.disabled = true;
 
             const context = `Eres el asistente de MiniMarket Cris (Dyzav).
             Datos actuales:
@@ -808,22 +836,39 @@
                         contents: [{ parts: [{ text: context + "\nUsuario: " + msg }] }]
                     })
                 });
+                
                 const data = await response.json();
                 
-                if (data.error) { throw new Error(data.error.message); }
+                if (data.error) {
+                    throw new Error(data.error.message || "Error desconocido de API");
+                }
 
-                const reply = data.candidates[0].content.parts[0].text;
-                const replyDiv = document.createElement('div'); replyDiv.className = 'message ai'; replyDiv.innerText = reply;
-                document.getElementById('chatMessages').appendChild(replyDiv);
-                
-                const container = document.getElementById('chatMessages'); container.scrollTop = container.scrollHeight;
+                if (data.candidates && data.candidates[0].content) {
+                    const reply = data.candidates[0].content.parts[0].text;
+                    const replyDiv = document.createElement('div'); replyDiv.className = 'message ai'; replyDiv.innerText = reply;
+                    document.getElementById('chatMessages').appendChild(replyDiv);
+                }
 
             } catch (error) {
                 console.error(error);
-                const errDiv = document.createElement('div'); errDiv.className = 'message ai'; errDiv.innerText = "Error de conexión con Gemini.";
+                const errDiv = document.createElement('div'); 
+                errDiv.className = 'message ai'; 
+                errDiv.style.color = 'red';
+                errDiv.innerText = `Error: ${error.message}`;
                 document.getElementById('chatMessages').appendChild(errDiv);
+            } finally {
+                // SIEMPRE desbloquear al final
+                input.disabled = false;
+                btn.disabled = false;
+                input.focus();
+                const container = document.getElementById('chatMessages'); container.scrollTop = container.scrollHeight;
             }
         }
+
+        // Enter key
+        document.getElementById('chatInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') sendChat();
+        });
 
         function askAssistant(txt) {
             document.getElementById('chatInput').value = txt; toggleChat(); sendChat();
