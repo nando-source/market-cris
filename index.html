@@ -150,7 +150,7 @@
     <div class="login-container" id="loginScreen">
         <div class="login-box">
             <h1 class="brand-name">MiniMarket Cris</h1>
-            <div class="ai-badge">✨ Powered by Gemini 1.5</div>
+            <div class="ai-badge">✨ Powered by Gemini 2.5</div>
             <form onsubmit="event.preventDefault(); handleLogin();">
                 <div class="input-group"><label>Usuario</label><input type="text" id="username" value="crisbel"></div>
                 <div class="input-group"><label>Contraseña</label><input type="password" id="password" value="crisbel2026"></div>
@@ -206,7 +206,16 @@
                     </div>
                     <div class="stat-card" style="background:var(--ai-gradient); color:white">
                         <small style="color:rgba(255,255,255,0.8)">IA Activa</small>
-                        <div class="stat-value">Gemini 1.5</div>
+                        <div class="stat-value">Gemini 2.5</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header"><h3 class="card-title">💡 Asistente Inteligente</h3></div>
+                    <div style="display:flex; gap:0.5rem; flex-wrap:wrap">
+                        <button class="badge badge-success" style="border:none; cursor:pointer" onclick="askAssistant('Analiza mis ventas de hoy')">📊 Análisis Día</button>
+                        <button class="badge badge-warning" style="border:none; cursor:pointer" onclick="askAssistant('¿Qué productos reponer?')">⚠️ Stock Bajo</button>
+                        <button class="badge badge-info" style="border:none; cursor:pointer" onclick="askAssistant('Proyección de ganancias')">🚀 Proyección</button>
                     </div>
                 </div>
 
@@ -218,11 +227,16 @@
                 </div>
 
                 <div class="card">
-                    <div class="card-header"><h3 class="card-title">💡 Asistente Inteligente</h3></div>
-                    <div style="display:flex; gap:0.5rem; flex-wrap:wrap">
-                        <button class="badge badge-success" style="border:none; cursor:pointer" onclick="askAssistant('Analiza mis ventas de hoy')">📊 Análisis Día</button>
-                        <button class="badge badge-warning" style="border:none; cursor:pointer" onclick="askAssistant('¿Qué productos reponer?')">⚠️ Stock Bajo</button>
-                        <button class="badge badge-info" style="border:none; cursor:pointer" onclick="askAssistant('Proyección de ganancias')">🚀 Proyección</button>
+                    <div class="card-header"><h3 class="card-title">Resumen Mensual</h3></div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <small>Ventas Totales</small>
+                            <div class="stat-value" id="monthRevenueBS">Bs. 0,00</div>
+                        </div>
+                        <div class="stat-card">
+                            <small>Ganancia Mensual</small>
+                            <div class="stat-value" id="monthProfitBS">Bs. 0,00</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -356,7 +370,8 @@
                 <h2 id="modalTitle">Producto</h2><button onclick="closeModal('productModal')" style="border:none; background:none; font-size:1.5rem">&times;</button>
             </div>
             <form onsubmit="saveProduct(event)">
-                <input type="hidden" id="editIndex"> <div class="form-grid">
+                <input type="hidden" id="editIndex">
+                <div class="form-grid">
                     <div class="form-group"><label>Código</label><input type="text" id="prodCode" required></div>
                     <div class="form-group"><label>Nombre</label><input type="text" id="prodName" required></div>
                     <div class="form-group"><label>Stock</label><input type="number" id="prodStock" required></div>
@@ -407,128 +422,127 @@
     <script>
         // CONFIGURACIÓN DYZAV
         const GEMINI_API_KEY = 'AIzaSyAj-nK6iC2Yb656r2mul8FoclOwiYzJvv8'; 
-        // VOLVEMOS A 1.5 FLASH: ES EL UNICO QUE GARANTIZA CUOTA GRATIS SIN ERROR
-        const GEMINI_MODEL = 'gemini-1.5-flash'; 
+        // MODELO CONFIGURADO SEGÚN TU SOLICITUD
+        const GEMINI_MODEL = 'gemini-2.5-flash-lite'; 
         const BCV_RATE = 378.46;
 
         // VARIABLES GRÁFICAS
         let salesChartInstance = null;
         let profitsChartInstance = null;
 
-        // ==========================================
-        // LÓGICA DE DATOS (NUCLEO)
-        // ==========================================
-        
-        let products = JSON.parse(localStorage.getItem('min_prod')) || [];
-        // Si no hay productos (o son pocos), reiniciar con lista completa
-        if (products.length < 5) {
-            products = [
-                {code: 'A01', name: 'Arroz Mary 1kg', stock: 45, cost: 65, price: 95},
-                {code: 'AC01', name: 'Aceite Mazeite 1L', stock: 12, cost: 110, price: 165},
-                {code: 'H01', name: 'Harina PAN 1kg', stock: 80, cost: 45, price: 72},
-                {code: 'L01', name: 'Leche Parmalat 1L', stock: 56, cost: 94, price: 132},
-                {code: 'P01', name: 'Pasta Primor 500g', stock: 38, cost: 50, price: 80},
-                {code: 'C01', name: 'Café Madrid 250g', stock: 23, cost: 150, price: 210},
-                {code: 'M01', name: 'Mayonesa Mavesa', stock: 29, cost: 90, price: 130},
-                {code: 'S01', name: 'Salsa Tomate', stock: 41, cost: 75, price: 110},
-                {code: 'AT01', name: 'Atún Margarita', stock: 52, cost: 65, price: 95},
-                {code: 'AZ01', name: 'Azúcar Montalban', stock: 67, cost: 45, price: 65},
-                {code: 'CERV01', name: 'Cerveza Polar', stock: 120, cost: 25, price: 35},
-                {code: 'JAB01', name: 'Jabón Las Llaves', stock: 40, cost: 30, price: 45},
-                {code: 'PAP01', name: 'Papel Higiénico 4r', stock: 60, cost: 55, price: 80},
-                {code: 'DEN01', name: 'Pasta Dental Colgate', stock: 35, cost: 40, price: 60},
-                {code: 'REF01', name: 'Refresco CocaCola 2L', stock: 24, cost: 60, price: 90},
-                {code: 'AGU01', name: 'Agua Minalba 5L', stock: 15, cost: 45, price: 70},
-                {code: 'GAL01', name: 'Galletas Maria', stock: 50, cost: 28, price: 42},
-                {code: 'MAN01', name: 'Mantequilla Mavesa', stock: 30, cost: 55, price: 85},
-                {code: 'QUE01', name: 'Queso Duro (Kg)', stock: 10, cost: 180, price: 250},
-                {code: 'JAM01', name: 'Jamón Pierna (Kg)', stock: 8, cost: 220, price: 310}
-            ];
-            localStorage.setItem('min_prod', JSON.stringify(products));
-        }
+        // 1. GENERADOR DE DATOS Y GESTIÓN (Motor de Arranque)
+        function initSystem() {
+            // Cargar datos
+            let products = JSON.parse(localStorage.getItem('min_prod')) || [];
+            let sales = JSON.parse(localStorage.getItem('min_sales')) || [];
+            let fiscalSales = JSON.parse(localStorage.getItem('min_fiscal_sales')) || [];
+            let fiscalPurchases = JSON.parse(localStorage.getItem('min_fiscal_purchases')) || [];
 
-        let sales = JSON.parse(localStorage.getItem('min_sales')) || [];
-        let fiscalSales = JSON.parse(localStorage.getItem('min_fiscal_sales')) || [];
-        let fiscalPurchases = JSON.parse(localStorage.getItem('min_fiscal_purchases')) || [];
-
-        // REINICIO FORZADO SI NO HAY VENTAS
-        if (sales.length < 5) {
-            console.log("Detectado sistema vacío. Generando datos de demostración...");
-            sales = []; fiscalSales = []; fiscalPurchases = [];
-            
-            const today = new Date();
-            
-            // Generar 60 días de historia
-            for(let i = 0; i < 60; i++) {
-                const date = new Date(today);
-                date.setDate(date.getDate() - i);
+            // REGLA DE ORO: Si no hay datos, se crean.
+            if (products.length === 0 || sales.length === 0) {
+                console.log("Sistema vacío detectado. Inyectando datos Dyzav Enterprise...");
                 
-                const dailyTransactions = Math.floor(Math.random() * 5) + 2; // Minimo 2 ventas al dia
-                
-                for(let t = 0; t < dailyTransactions; t++) {
-                    const items = [];
-                    const numItems = Math.floor(Math.random() * 3) + 1;
-                    let totalVenta = 0;
-                    let profitVenta = 0;
+                // A. Productos (20 items)
+                products = [
+                    {code: 'A01', name: 'Arroz Mary 1kg', stock: 45, cost: 65, price: 95},
+                    {code: 'AC01', name: 'Aceite Mazeite 1L', stock: 12, cost: 110, price: 165},
+                    {code: 'H01', name: 'Harina PAN 1kg', stock: 80, cost: 45, price: 72},
+                    {code: 'L01', name: 'Leche Parmalat 1L', stock: 56, cost: 94, price: 132},
+                    {code: 'P01', name: 'Pasta Primor 500g', stock: 38, cost: 50, price: 80},
+                    {code: 'C01', name: 'Café Madrid 250g', stock: 23, cost: 150, price: 210},
+                    {code: 'M01', name: 'Mayonesa Mavesa', stock: 29, cost: 90, price: 130},
+                    {code: 'S01', name: 'Salsa Tomate', stock: 41, cost: 75, price: 110},
+                    {code: 'AT01', name: 'Atún Margarita', stock: 52, cost: 65, price: 95},
+                    {code: 'AZ01', name: 'Azúcar Montalban', stock: 67, cost: 45, price: 65},
+                    {code: 'CERV01', name: 'Cerveza Polar', stock: 120, cost: 25, price: 35},
+                    {code: 'JAB01', name: 'Jabón Las Llaves', stock: 40, cost: 30, price: 45},
+                    {code: 'PAP01', name: 'Papel Higiénico 4r', stock: 60, cost: 55, price: 80},
+                    {code: 'DEN01', name: 'Pasta Dental Colgate', stock: 35, cost: 40, price: 60},
+                    {code: 'REF01', name: 'Refresco CocaCola 2L', stock: 24, cost: 60, price: 90},
+                    {code: 'AGU01', name: 'Agua Minalba 5L', stock: 15, cost: 45, price: 70},
+                    {code: 'GAL01', name: 'Galletas Maria', stock: 50, cost: 28, price: 42},
+                    {code: 'MAN01', name: 'Mantequilla Mavesa', stock: 30, cost: 55, price: 85},
+                    {code: 'QUE01', name: 'Queso Duro (Kg)', stock: 10, cost: 180, price: 250},
+                    {code: 'JAM01', name: 'Jamón Pierna (Kg)', stock: 8, cost: 220, price: 310}
+                ];
 
-                    for(let k = 0; k < numItems; k++) {
-                        const prod = products[Math.floor(Math.random() * products.length)];
-                        const qty = Math.floor(Math.random() * 2) + 1;
-                        items.push({...prod, qty});
-                        totalVenta += prod.price * qty;
-                        profitVenta += (prod.price - prod.cost) * qty;
+                // B. Ventas (60 días de historial)
+                const today = new Date();
+                for(let i = 0; i < 60; i++) {
+                    const date = new Date(today);
+                    date.setDate(date.getDate() - i);
+                    
+                    const dailyTransactions = Math.floor(Math.random() * 4) + 1;
+                    
+                    for(let t = 0; t < dailyTransactions; t++) {
+                        const items = [];
+                        const numItems = Math.floor(Math.random() * 3) + 1;
+                        let totalVenta = 0;
+                        let profitVenta = 0;
+
+                        for(let k = 0; k < numItems; k++) {
+                            const prod = products[Math.floor(Math.random() * products.length)];
+                            const qty = Math.floor(Math.random() * 2) + 1;
+                            items.push({...prod, qty});
+                            totalVenta += prod.price * qty;
+                            profitVenta += (prod.price - prod.cost) * qty;
+                        }
+
+                        sales.push({ 
+                            date: date.toISOString(), 
+                            total: totalVenta, 
+                            profit: profitVenta, 
+                            items: items,
+                            invoiceNumber: `001-${10000 + sales.length}`
+                        });
+
+                        fiscalSales.push({
+                            date: date.toISOString().split('T')[0],
+                            invoiceNumber: `001-${10000 + sales.length}`,
+                            client: Math.random() > 0.5 ? "Consumidor Final" : "Cliente Regular",
+                            rif: "V-00000000",
+                            total: totalVenta
+                        });
                     }
+                }
 
-                    // Venta Operativa
-                    sales.push({ 
-                        date: date.toISOString(), 
-                        total: totalVenta, 
-                        profit: profitVenta, 
-                        items: items,
-                        invoiceNumber: `001-${10000 + sales.length}`
-                    });
-
-                    // Venta Fiscal
-                    fiscalSales.push({
+                // C. Compras
+                for(let i = 0; i < 15; i++) {
+                    const date = new Date(today);
+                    date.setDate(date.getDate() - (i*4));
+                    fiscalPurchases.push({
                         date: date.toISOString().split('T')[0],
-                        invoiceNumber: `001-${10000 + sales.length}`,
-                        client: "Consumidor Final",
-                        rif: "V-00000000",
-                        total: totalVenta
+                        vendor: "Distribuidora Polar",
+                        rif: "J-00000000",
+                        invoiceNumber: `FAC-${5000+i}`,
+                        total: Math.floor(Math.random() * 2000) + 500
                     });
                 }
+
+                // Guardar todo
+                localStorage.setItem('min_prod', JSON.stringify(products));
+                localStorage.setItem('min_sales', JSON.stringify(sales));
+                localStorage.setItem('min_fiscal_sales', JSON.stringify(fiscalSales));
+                localStorage.setItem('min_fiscal_purchases', JSON.stringify(fiscalPurchases));
             }
 
-            // Generar Compras (Gastos)
-            for(let i = 0; i < 20; i++) {
-                const date = new Date(today);
-                date.setDate(date.getDate() - (i * 3));
-                fiscalPurchases.push({
-                    date: date.toISOString().split('T')[0],
-                    vendor: "Proveedor General",
-                    rif: "J-12345678",
-                    invoiceNumber: `FAC-${1000+i}`,
-                    total: Math.floor(Math.random() * 3000) + 500
-                });
-            }
-
-            sales.sort((a,b) => new Date(b.date) - new Date(a.date));
-            fiscalSales.sort((a,b) => new Date(b.date) - new Date(a.date));
-            fiscalPurchases.sort((a,b) => new Date(b.date) - new Date(a.date));
-
-            localStorage.setItem('min_sales', JSON.stringify(sales));
-            localStorage.setItem('min_fiscal_sales', JSON.stringify(fiscalSales));
-            localStorage.setItem('min_fiscal_purchases', JSON.stringify(fiscalPurchases));
+            return { products, sales, fiscalSales, fiscalPurchases };
         }
 
-        // Recuperar objetos Date
-        sales = sales.map(s => ({...s, date: new Date(s.date)}));
+        // Variables Globales (cargadas desde init)
+        let systemData = initSystem();
+        let products = systemData.products;
+        let sales = systemData.sales.map(s => ({...s, date: new Date(s.date)})); // Fix dates
+        let fiscalSales = systemData.fiscalSales;
+        let fiscalPurchases = systemData.fiscalPurchases;
         let cart = [];
 
         // INICIALIZACIÓN
         document.addEventListener('DOMContentLoaded', () => {
             const dateStr = new Date().toLocaleDateString('es-VE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
             document.getElementById('currentDateDisplay').textContent = dateStr;
+            
+            // Renderizar todo inmediatamente
             updateDashboard();
             renderInventory();
             renderFiscal();
@@ -543,7 +557,9 @@
             if(u === 'crisbel' && p === 'crisbel2026') {
                 document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('appContainer').style.display = 'block';
-                updateDashboard(); renderProfits();
+                // Refrescar gráficos al mostrarse (Chart.js fix)
+                updateDashboard(); 
+                renderProfits();
             } else { alert('Credenciales incorrectas'); }
         }
 
@@ -573,12 +589,12 @@
         // GRÁFICOS (CHART.JS)
         function renderCharts() {
             const ctxSales = document.getElementById('salesChart').getContext('2d');
+            
             const labels = [];
             const dataTotal = [];
-            
-            // Agrupar por dia (ultimos 15)
             const today = new Date();
-            for(let i=14; i>=0; i--) {
+            
+            for(let i=29; i>=0; i--) {
                 const d = new Date(today);
                 d.setDate(d.getDate() - i);
                 const k = d.toLocaleDateString('es-VE');
@@ -629,18 +645,26 @@
             });
         }
 
-        // LÓGICA
+        // LÓGICA DE NEGOCIO
         function updateDashboard() {
             const todayStr = new Date().toLocaleDateString();
             const todaysSales = sales.filter(s => s.date.toLocaleDateString() === todayStr);
             const total = todaysSales.reduce((acc, s) => acc + s.total, 0);
             const profit = todaysSales.reduce((acc, s) => acc + s.profit, 0);
 
+            const currentMonth = new Date().getMonth();
+            const monthSales = sales.filter(s => s.date.getMonth() === currentMonth);
+            const monthRevenue = monthSales.reduce((acc, s) => acc + s.total, 0);
+            const monthProfit = monthSales.reduce((acc, s) => acc + s.profit, 0);
+
             document.getElementById('todaySalesBS').textContent = `Bs. ${total.toFixed(2)}`;
             document.getElementById('todaySalesUSD').textContent = `$${(total/BCV_RATE).toFixed(2)} USD`;
             document.getElementById('todayProfitBS').textContent = `Bs. ${profit.toFixed(2)}`;
             document.getElementById('totalProducts').textContent = products.length;
             
+            document.getElementById('monthRevenueBS').textContent = `Bs. ${monthRevenue.toFixed(2)}`;
+            document.getElementById('monthProfitBS').textContent = `Bs. ${monthProfit.toFixed(2)}`;
+
             setTimeout(renderCharts, 100);
         }
 
@@ -769,7 +793,7 @@
                 price: Number(document.getElementById('prodPrice').value)
             };
 
-            if(index >= 0) {
+            if(index >= 0 && index !== "") {
                 products[index] = p; // Update
             } else {
                 products.push(p); // Create
@@ -781,8 +805,8 @@
 
         // FISCAL
         function renderFiscal() {
-            document.getElementById('salesBookBody').innerHTML = fiscalSales.slice(0,50).map(s => `<tr><td>${s.date}</td><td>${s.invoiceNumber}</td><td>${s.client}</td><td>${s.total.toFixed(2)}</td></tr>`).join('');
-            document.getElementById('purchasesBookBody').innerHTML = fiscalPurchases.slice(0,50).map(p => `<tr><td>${p.date}</td><td>${p.vendor}</td><td>${p.invoiceNumber}</td><td>${p.total.toFixed(2)}</td></tr>`).join('');
+            document.getElementById('salesBookBody').innerHTML = fiscalSales.slice(0,50).map(s => `<tr><td>${s.date}</td><td>${s.invoiceNumber}</td><td>${s.client}</td><td>${s.rif || 'V-0000'}</td><td>${s.total.toFixed(2)}</td></tr>`).join('');
+            document.getElementById('purchasesBookBody').innerHTML = fiscalPurchases.slice(0,50).map(p => `<tr><td>${p.date}</td><td>${p.vendor}</td><td>${p.rif}</td><td>${p.invoiceNumber}</td><td>${p.total.toFixed(2)}</td></tr>`).join('');
             
             const deb = fiscalSales.reduce((a,b)=>a+(b.total*0.16),0);
             const cred = fiscalPurchases.reduce((a,b)=>a+(b.total*0.16),0);
@@ -803,6 +827,7 @@
                 date: document.getElementById('fiscalSaleDate').value,
                 invoiceNumber: document.getElementById('fiscalSaleInvoice').value,
                 client: document.getElementById('fiscalSaleClient').value,
+                rif: document.getElementById('fiscalSaleRIF').value,
                 total: Number(document.getElementById('fiscalSaleAmount').value)
             });
             localStorage.setItem('min_fiscal_sales', JSON.stringify(fiscalSales));
@@ -813,6 +838,7 @@
             fiscalPurchases.unshift({
                 date: document.getElementById('fiscalPurchaseDate').value,
                 vendor: document.getElementById('fiscalPurchaseVendor').value,
+                rif: document.getElementById('fiscalPurchaseRIF').value,
                 invoiceNumber: document.getElementById('fiscalPurchaseInvoice').value,
                 total: Number(document.getElementById('fiscalPurchaseAmount').value)
             });
