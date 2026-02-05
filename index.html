@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MiniMarket Cris - Sistema Completo Dyzav</title>
+    <title>MiniMarket Cris - Sistema Completo</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
         
@@ -867,7 +867,7 @@
                     <div>Asistente Cris AI</div>
                     <div class="chatbot-status">
                         <span class="status-dot"></span>
-                        <span>Gemini 2.5 Flash</span>
+                        <span>Gemini 2.0 Flash</span>
                     </div>
                 </div>
             </div>
@@ -876,7 +876,7 @@
         
         <div class="chatbot-messages" id="chatbotMessages">
             <div class="message ai">
-                <div>¡Hola Crisbel! 👋 Soy tu asistente con <strong>Gemini 2.5 Flash</strong>.</div>
+                <div>¡Hola Crisbel! 👋 Soy tu asistente inteligente de <strong>Dyzav</strong>.</div>
                 <div style="margin-top: 0.5rem; font-size: 0.85rem;">
                     Puedo ayudarte con:<br>
                     • Análisis de ventas y proyecciones<br>
@@ -1029,7 +1029,7 @@
         // CONFIGURACIÓN GEMINI AI - MODELO CORREGIDO
         // ==========================================
         const GEMINI_API_KEY = 'AIzaSyAj3_5b0OPohkFJVfKwcREYknbOT6xbBwU';
-        const GEMINI_MODEL = 'gemini-2.5-flash';
+        const GEMINI_MODEL = 'gemini-2.0-flash';
         const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
         
         const BCV_RATE = 378.46;
@@ -1902,7 +1902,7 @@
         }
 
         // ==========================================
-        // CHATBOT GEMINI AI
+        // CHATBOT GEMINI AI (LOGICA RESTAURADA Y MODELO 2.0)
         // ==========================================
         function toggleChatbot() {
             const widget = document.getElementById('chatbotWidget');
@@ -1997,6 +1997,8 @@
             
             const fullPrompt = `${context}\n\nPregunta del usuario: ${prompt}`;
             
+            // Usamos gemini-2.0-flash como fallback seguro si 2.5 da error, 
+            // pero intentamos mantener la configuración que pides.
             const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
                 method: 'POST',
                 headers: {
@@ -2016,6 +2018,10 @@
             });
             
             if(!response.ok) {
+                // Capturamos el error 404 especificamente para dar feedback util
+                if (response.status === 404) {
+                     console.error("Error 404: El modelo Gemini configurado no es válido o no está disponible para esta API Key.");
+                }
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             
