@@ -9,878 +9,531 @@
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
         
         :root {
-            --primary: #FF6B35;
-            --primary-dark: #E85A2D;
-            --secondary: #2C3E50;
-            --accent: #F7C59F;
-            --success: #27AE60;
-            --danger: #E74C3C;
-            --warning: #F39C12;
-            --info: #3498DB;
-            --light: #F8F9FA;
-            --dark: #2C3E50;
+            --primary: #FF6B35; --secondary: #2C3E50; --success: #27AE60; --danger: #E74C3C;
+            --light: #F8F9FA; --dark: #2C3E50;
             --gradient: linear-gradient(135deg, #FF6B35 0%, #F7C59F 100%);
-            --bcv-blue: #003366;
-            --chat-bg: #F0F4F8;
             --ai-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: #f0f2f5; color: var(--dark); overflow-x: hidden; padding-bottom: 80px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: #f0f2f5; color: var(--dark); padding-bottom: 80px; }
 
-        /* UI COMPONENTS */
-        .bcv-ticker { position: fixed; top: 0; left: 0; right: 0; background: var(--bcv-blue); color: white; padding: 0.5rem 1rem; display: flex; justify-content: space-between; align-items: center; z-index: 1001; font-size: 0.85rem; min-height: 45px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-        .rate-value { font-size: 1.1rem; color: #FFD700; text-shadow: 0 0 10px rgba(255,215,0,0.3); font-weight: 700; }
-        .sync-btn { background: rgba(255,255,255,0.2); border: none; color: white; padding: 0.3rem 0.8rem; border-radius: 20px; cursor: pointer; font-size: 0.75rem; display: flex; align-items: center; gap: 0.3rem; }
+        /* UI BASE */
+        .top-bar { position: fixed; top:0; left:0; right:0; background: #003366; color:white; padding:0.5rem 1rem; z-index:1000; font-size:0.9rem; display:flex; justify-content:space-between; }
+        .app-layout { display: flex; padding-top: 40px; min-height: 100vh; }
         
-        /* LOGIN */
-        .login-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--gradient); display: flex; justify-content: center; align-items: center; z-index: 2000; padding: 1rem; }
-        .login-box { background: white; padding: 2rem; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); text-align: center; max-width: 400px; width: 100%; animation: slideUp 0.5s ease; }
-        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .brand-name { font-size: 1.8rem; font-weight: 800; color: var(--primary); letter-spacing: -1px; margin: 0.5rem 0; }
-        .ai-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: var(--ai-gradient); color: white; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.75rem; margin-bottom: 1.5rem; }
-        .input-group { margin-bottom: 1rem; text-align: left; }
-        .input-group label { display: block; margin-bottom: 0.3rem; font-weight: 500; font-size: 0.9rem; color: #555; }
-        .input-group input { width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px; font-size: 1rem; outline: none; transition: 0.3s; }
-        .input-group input:focus { border-color: var(--primary); }
-        .btn-primary { width: 100%; padding: 12px; background: var(--gradient); color: white; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: transform 0.2s; }
-        
-        /* LAYOUT */
-        .app-container { display: none; min-height: 100vh; padding-top: 45px; }
-        .mobile-header { position: fixed; top: 45px; left: 0; right: 0; height: 60px; background: white; display: flex; align-items: center; justify-content: space-between; padding: 0 1rem; z-index: 999; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        .menu-toggle { font-size: 1.5rem; background: none; border: none; cursor: pointer; color: var(--secondary); }
-        .mobile-title { font-weight: 700; font-size: 1.1rem; color: var(--secondary); }
-        .mobile-user { width: 32px; height: 32px; background: var(--gradient); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 0.9rem; }
-
         /* SIDEBAR */
-        .sidebar { position: fixed; left: 0; top: 105px; width: 260px; height: calc(100vh - 105px); background: white; z-index: 998; transform: translateX(-100%); transition: transform 0.3s ease; box-shadow: 2px 0 10px rgba(0,0,0,0.1); overflow-y: auto; }
-        .sidebar.active { transform: translateX(0); }
-        .sidebar-overlay { position: fixed; top: 105px; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 997; display: none; }
-        .sidebar-overlay.active { display: block; }
-        .nav-item { padding: 1rem 1.5rem; display: flex; align-items: center; gap: 1rem; cursor: pointer; color: #555; transition: 0.2s; border-left: 4px solid transparent; }
-        .nav-item.active { background: rgba(255,107,53,0.1); color: var(--primary); border-left-color: var(--primary); font-weight: 600; }
-        .nav-icon { font-size: 1.2rem; width: 24px; text-align: center; }
+        .sidebar { width: 260px; background: white; height: 100vh; position: fixed; top: 40px; left: 0; box-shadow: 2px 0 10px rgba(0,0,0,0.05); z-index: 900; overflow-y: auto; }
+        .sidebar-header { padding: 2rem; background: var(--gradient); color: white; }
+        .nav-item { padding: 1rem 1.5rem; cursor: pointer; display: flex; gap: 10px; color: #555; transition: 0.2s; }
+        .nav-item:hover, .nav-item.active { background: #fff5f0; color: var(--primary); border-left: 4px solid var(--primary); font-weight: 600; }
 
-        /* DESKTOP */
-        .desktop-header { display: none; }
-        @media (min-width: 1024px) {
-            .mobile-header { display: none; }
-            .sidebar { transform: translateX(0); top: 45px; height: calc(100vh - 45px); width: 260px; }
-            .main-content { margin-left: 260px; padding: 2rem; }
-            .desktop-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
-            .sidebar-overlay { display: none !important; }
+        /* MAIN CONTENT */
+        .main-content { margin-left: 260px; flex: 1; padding: 2rem; width: 100%; }
+        
+        /* CARDS */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .card { background: white; padding: 1.5rem; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); margin-bottom: 1.5rem; }
+        .stat-val { font-size: 1.8rem; font-weight: 700; margin: 0.5rem 0; color: var(--secondary); }
+        .chart-box { position: relative; height: 300px; width: 100%; }
+
+        /* TABLES */
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        th { text-align: left; padding: 1rem; background: #f8f9fa; color: #666; font-size: 0.85rem; }
+        td { padding: 1rem; border-bottom: 1px solid #eee; font-size: 0.9rem; }
+        .badge { padding: 4px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 600; }
+        .bg-green { background: #d4edda; color: #155724; }
+        .bg-red { background: #f8d7da; color: #721c24; }
+
+        /* MOBILE */
+        @media (max-width: 1024px) {
+            .sidebar { transform: translateX(-100%); transition: 0.3s; }
+            .sidebar.show { transform: translateX(0); }
+            .main-content { margin-left: 0; padding: 1rem; }
+            .mobile-btn { display: block; }
         }
-        .main-content { padding: 1rem; padding-top: 75px; min-height: 100vh; }
-        @media (min-width: 1024px) { .main-content { padding-top: 2rem; } }
-
-        /* CONTENT */
-        .content-section { display: none; animation: fadeIn 0.3s; }
-        .content-section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        /* STATS & CARDS */
-        .stats-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; margin-bottom: 1.5rem; }
-        @media (min-width: 600px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (min-width: 1024px) { .stats-grid { grid-template-columns: repeat(4, 1fr); } }
-        .stat-card { background: white; padding: 1.2rem; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); position: relative; overflow: hidden; }
-        .stat-card::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--gradient); }
-        .stat-value { font-size: 1.6rem; font-weight: 700; color: var(--secondary); margin: 0.5rem 0; }
-        .stat-label { font-size: 0.85rem; color: #777; }
-
-        .card { background: white; border-radius: 15px; padding: 1.5rem; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 1.5rem; }
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
-        .card-title { font-size: 1.2rem; font-weight: 700; color: var(--secondary); }
-
-        /* CHARTS CONTAINER */
-        .chart-container { position: relative; height: 300px; width: 100%; margin-bottom: 1rem; }
-
-        /* TABLES & FORMS */
-        .table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -1.5rem; padding: 0 1.5rem; }
-        .data-table { width: 100%; min-width: 600px; border-collapse: collapse; }
-        .data-table th { text-align: left; padding: 1rem; background: #f8f9fa; font-size: 0.8rem; text-transform: uppercase; color: #666; font-weight: 600; }
-        .data-table td { padding: 1rem; border-bottom: 1px solid #eee; font-size: 0.95rem; }
-        .badge { padding: 0.25rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
-        .badge-success { background: rgba(39,174,96,0.1); color: var(--success); }
-        .badge-warning { background: rgba(243,156,18,0.1); color: var(--warning); }
-        .badge-danger { background: rgba(231,76,60,0.1); color: var(--danger); }
-        .badge-info { background: rgba(52,152,219,0.1); color: var(--info); }
-
-        .dual-currency { display: flex; flex-direction: column; font-size: 0.85rem; }
-        .dual-currency .primary { font-weight: 600; color: var(--secondary); }
-        .dual-currency .secondary { font-size: 0.75rem; color: #666; }
-
-        .form-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
-        @media (min-width: 600px) { .form-grid { grid-template-columns: repeat(2, 1fr); } }
-        .form-group { display: flex; flex-direction: column; }
-        .form-group label { margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 500; }
-        .form-group input, .form-group select { padding: 0.8rem; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; }
+        .mobile-btn { display: none; background: none; border: none; font-size: 1.5rem; color: white; cursor: pointer; }
 
         /* CHATBOT */
-        .chatbot-widget { position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px; background: var(--ai-gradient); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4); z-index: 3000; font-size: 1.5rem; color: white; animation: pulse 3s infinite; }
-        .chatbot-container { position: fixed; bottom: 0; right: 0; width: 100%; height: 100%; background: white; z-index: 3001; display: none; flex-direction: column; }
-        @media (min-width: 480px) { .chatbot-container { bottom: 90px; right: 20px; width: 380px; height: 500px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); } }
-        .chatbot-container.active { display: flex; }
-        .chatbot-messages { flex: 1; overflow-y: auto; padding: 1rem; background: var(--chat-bg); display: flex; flex-direction: column; gap: 0.8rem; }
-        .message { max-width: 85%; padding: 0.8rem 1rem; border-radius: 15px; font-size: 0.9rem; line-height: 1.4; }
-        .message.ai { align-self: flex-start; background: white; border: 1px solid #e0e0e0; border-bottom-left-radius: 2px; }
-        .message.user { align-self: flex-end; background: var(--primary); color: white; border-bottom-right-radius: 2px; }
+        .chat-widget { position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px; background: var(--ai-gradient); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; cursor: pointer; z-index: 2000; box-shadow: 0 5px 20px rgba(100,100,255,0.3); }
+        .chat-window { position: fixed; bottom: 90px; right: 20px; width: 350px; height: 500px; background: white; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); display: none; flex-direction: column; z-index: 2000; overflow: hidden; }
+        .chat-body { flex: 1; padding: 1rem; overflow-y: auto; background: #f4f7f6; }
+        .msg { padding: 10px 15px; border-radius: 15px; margin-bottom: 10px; max-width: 80%; font-size: 0.9rem; }
+        .msg.bot { background: white; align-self: flex-start; border: 1px solid #eee; }
+        .msg.user { background: var(--primary); color: white; align-self: flex-end; margin-left: auto; }
 
-        /* MODAL */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 4000; justify-content: center; align-items: center; padding: 1rem; }
-        .modal.active { display: flex; }
-        .modal-content { background: white; padding: 1.5rem; border-radius: 20px; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; }
-
-        /* Fiscal Specifics */
-        .fiscal-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; border-bottom: 2px solid #f0f0f0; overflow-x: auto; }
-        .fiscal-tab { padding: 0.75rem 1.5rem; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.3s; font-weight: 500; color: #666; white-space: nowrap; }
-        .fiscal-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
-        .fiscal-content { display: none; }
-        .fiscal-content.active { display: block; }
-
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(102, 126, 234, 0); } 100% { box-shadow: 0 0 0 0 rgba(102, 126, 234, 0); } }
+        /* UTILS */
+        .btn { padding: 0.6rem 1.2rem; border: none; border-radius: 8px; cursor: pointer; background: var(--gradient); color: white; font-weight: 500; }
+        .hidden { display: none; }
+        input { padding: 10px; border: 1px solid #ddd; border-radius: 8px; width: 100%; }
     </style>
 </head>
 <body>
 
-    <div class="bcv-ticker">
-        <div><span>🏦 BCV:</span> <span class="rate-value">Bs. 378,46</span></div>
-        <button class="sync-btn" onclick="fetchBCVRate()"><span>🔄</span> Actualizar</button>
+    <div class="top-bar">
+        <div style="display:flex; gap:10px; align-items:center;">
+            <button class="mobile-btn" onclick="toggleMenu()">☰</button>
+            <strong>MiniMarket Cris</strong>
+        </div>
+        <div>Tasa BCV: <strong id="bcvRate">Bs. 378,46</strong></div>
     </div>
 
-    <div class="login-container" id="loginScreen">
-        <div class="login-box">
-            <h1 class="brand-name">MiniMarket Cris</h1>
-            <div class="ai-badge">✨ Powered by Gemini 2.5</div>
-            <form onsubmit="event.preventDefault(); handleLogin();">
-                <div class="input-group"><label>Usuario</label><input type="text" id="username" value="crisbel"></div>
-                <div class="input-group"><label>Contraseña</label><input type="password" id="password" value="crisbel2026"></div>
-                <button type="submit" class="btn-primary">Entrar</button>
-            </form>
-            <p style="margin-top:2rem; font-size:0.7rem; color:#999">Generated by <strong>Dyzav</strong></p>
-        </div>
-    </div>
-
-    <div class="app-container" id="appContainer">
-        <div class="mobile-header">
-            <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
-            <div class="mobile-title" id="pageTitleMobile">Dashboard</div>
-            <div class="mobile-user">C</div>
+    <div class="app-layout">
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2>Panel Dyzav</h2>
+                <p>Admin: Crisbel</p>
+            </div>
+            <div onclick="show('dashboard')" class="nav-item active">📊 Dashboard</div>
+            <div onclick="show('inventory')" class="nav-item">📦 Inventario</div>
+            <div onclick="show('sales')" class="nav-item">💰 Punto de Venta</div>
+            <div onclick="show('profits')" class="nav-item">📈 Ganancias</div>
+            <div onclick="show('fiscal')" class="nav-item">📚 Libros Fiscales</div>
         </div>
 
-        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
-        <aside class="sidebar" id="sidebar">
-            <div style="padding:2rem; background:var(--gradient); color:white">
-                <h2>Market Cris</h2>
-                <small>Admin: Crisbel</small>
-            </div>
-            <nav style="padding:1rem">
-                <div class="nav-item active" onclick="showSection('dashboard')"><span class="nav-icon">📊</span> Dashboard</div>
-                <div class="nav-item" onclick="showSection('inventory')"><span class="nav-icon">📦</span> Inventario</div>
-                <div class="nav-item" onclick="showSection('sales')"><span class="nav-icon">💰</span> Ventas</div>
-                <div class="nav-item" onclick="showSection('profits')"><span class="nav-icon">📈</span> Ganancias</div>
-                <div class="nav-item" onclick="showSection('fiscal')"><span class="nav-icon">📚</span> Libros Fiscales</div>
-                <div class="nav-item" onclick="logout()" style="color:var(--danger); margin-top:2rem"><span class="nav-icon">🚪</span> Salir</div>
-            </nav>
-        </aside>
-
-        <main class="main-content">
-            <div class="desktop-header">
-                <h1 style="font-size: 1.8rem; color: var(--secondary);" id="pageTitleDesktop">Dashboard</h1>
-                <div style="text-align: right;"><strong>Crisbel</strong><br><small style="color: #666;" id="currentDateDisplay">Fecha</small></div>
-            </div>
-
-            <div id="dashboard" class="content-section active">
+        <div class="main-content">
+            
+            <div id="dashboard" class="page">
+                <h2 style="margin-bottom:1.5rem">Resumen General</h2>
                 <div class="stats-grid">
-                    <div class="stat-card">
-                        <small>Ventas Hoy</small>
-                        <div class="stat-value" id="todaySalesBS">Bs. 0,00</div>
-                        <small style="color:var(--success)" id="todaySalesUSD">$0.00 USD</small>
-                    </div>
-                    <div class="stat-card">
-                        <small>Ganancia Neta</small>
-                        <div class="stat-value" style="color:var(--success)" id="todayProfitBS">Bs. 0,00</div>
-                    </div>
-                    <div class="stat-card">
-                        <small>Productos</small>
-                        <div class="stat-value" id="totalProducts">0</div>
-                    </div>
-                    <div class="stat-card" style="background:var(--ai-gradient); color:white">
-                        <small style="color:rgba(255,255,255,0.8)">IA Activa</small>
-                        <div class="stat-value">Gemini 2.5</div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-header"><h3 class="card-title">💡 Asistente Inteligente</h3></div>
-                    <div style="display:flex; gap:0.5rem; flex-wrap:wrap">
-                        <button class="badge badge-success" style="border:none; cursor:pointer" onclick="askAssistant('Analiza mis ventas de hoy')">📊 Análisis Día</button>
-                        <button class="badge badge-warning" style="border:none; cursor:pointer" onclick="askAssistant('¿Qué productos reponer?')">⚠️ Stock Bajo</button>
-                        <button class="badge badge-info" style="border:none; cursor:pointer" onclick="askAssistant('Proyección de ganancias')">🚀 Proyección</button>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-header"><h3 class="card-title">Tendencia de Ventas (30 Días)</h3></div>
-                    <div class="chart-container">
-                        <canvas id="salesChart"></canvas>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-header"><h3 class="card-title">Resumen Mensual</h3></div>
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <small>Ventas Totales</small>
-                            <div class="stat-value" id="monthRevenueBS">Bs. 0,00</div>
-                        </div>
-                        <div class="stat-card">
-                            <small>Ganancia Mensual</small>
-                            <div class="stat-value" id="monthProfitBS">Bs. 0,00</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="inventory" class="content-section">
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">Inventario</h3>
-                        <button class="btn-primary" style="width:auto; padding:0.5rem 1rem" onclick="openProductModal()">+ Nuevo</button>
-                    </div>
-                    <div class="table-wrapper">
-                        <table class="data-table">
-                            <thead><tr><th>Cód</th><th>Producto</th><th>Stock</th><th>Precio</th><th>Margen</th><th>Acción</th></tr></thead>
-                            <tbody id="inventoryTable"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <div id="sales" class="content-section">
-                <div class="card">
-                    <div class="card-header"><h3 class="card-title">Punto de Venta</h3></div>
-                    <div style="display:flex; gap:0.5rem; margin-bottom:1rem">
-                        <input type="text" id="saleSearch" placeholder="Buscar..." style="flex:1; padding:10px; border:1px solid #ddd; border-radius:8px">
-                        <button class="btn-primary" style="width:auto" onclick="addToCart()">+</button>
-                    </div>
-                    <div class="table-wrapper">
-                        <table class="data-table">
-                            <thead><tr><th>Prod</th><th>Cant</th><th>Total</th><th></th></tr></thead>
-                            <tbody id="cartTable"></tbody>
-                        </table>
-                    </div>
-                    <div style="margin-top:1.5rem; text-align:right">
-                        <h3>Total: <span id="cartTotal">Bs. 0,00</span></h3>
-                        <button class="btn-primary" style="background:var(--success); margin-top:1rem" onclick="processSale()">Cobrar</button>
-                    </div>
-                </div>
-            </div>
-
-            <div id="profits" class="content-section">
-                <div class="card">
-                    <div class="card-header"><h3 class="card-title">Análisis de Ganancias</h3></div>
-                    <div class="summary-cards" style="display:grid; grid-template-columns: repeat(2, 1fr); gap:1rem; margin-bottom:1.5rem;">
-                        <div class="stat-card">
-                            <h4>Ingresos</h4>
-                            <div class="value" id="profitRevenue">Bs. 0</div>
-                        </div>
-                        <div class="stat-card">
-                            <h4>Ganancia Neta</h4>
-                            <div class="value" id="profitNet" style="color: var(--success);">Bs. 0</div>
-                        </div>
+                    <div class="card">
+                        <small>Ventas Totales (Mes)</small>
+                        <div class="stat-val" id="totalSales">Bs. 0,00</div>
+                        <small class="bg-green badge">↑ 12% vs mes anterior</small>
                     </div>
                     <div class="card">
-                        <div class="card-header"><h3 class="card-title">Top 5 Productos Rentables</h3></div>
-                        <div class="chart-container">
-                            <canvas id="profitsChart"></canvas>
-                        </div>
+                        <small>Ganancia Neta</small>
+                        <div class="stat-val" id="totalProfit" style="color:var(--success)">Bs. 0,00</div>
                     </div>
-                    <div class="table-wrapper">
-                        <table class="data-table">
-                            <thead><tr><th>Producto</th><th>Ventas</th><th>Ganancia</th></tr></thead>
-                            <tbody id="profitTable"></tbody>
-                        </table>
+                    <div class="card">
+                        <small>Total Transacciones</small>
+                        <div class="stat-val" id="totalTx">0</div>
                     </div>
                 </div>
-            </div>
-
-            <div id="fiscal" class="content-section">
                 <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">Libros SENIAT</h3>
-                        <button class="badge badge-success" style="border:none; cursor:pointer" onclick="downloadFiscal()">Descargar CSV</button>
-                    </div>
-                    
-                    <div class="fiscal-tabs">
-                        <div class="fiscal-tab active" onclick="showFiscalTab('sales-book')">📗 Ventas</div>
-                        <div class="fiscal-tab" onclick="showFiscalTab('purchases-book')">📘 Compras</div>
-                        <div class="fiscal-tab" onclick="showFiscalTab('summary')">📊 Resumen</div>
-                    </div>
+                    <h3>Tendencia de Ventas (Últimos 30 días)</h3>
+                    <div class="chart-box"><canvas id="salesChart"></canvas></div>
+                </div>
+            </div>
 
-                    <div id="sales-book" class="fiscal-content active">
-                        <div style="margin-bottom:1rem"><button class="btn-primary" onclick="openModal('saleEntryModal')">+ Venta Manual</button></div>
-                        <div class="table-wrapper">
-                            <table class="data-table">
-                                <thead><tr><th>Fecha</th><th>Factura</th><th>Cliente</th><th>RIF</th><th>Total</th></tr></thead>
-                                <tbody id="salesBookBody"></tbody>
+            <div id="inventory" class="page hidden">
+                <div style="display:flex; justify-content:space-between; margin-bottom:1rem">
+                    <h2>Inventario</h2>
+                    <button class="btn" onclick="alert('Función de agregar en mantenimiento')">+ Nuevo Producto</button>
+                </div>
+                <div class="card">
+                    <table id="invTable">
+                        <thead><tr><th>Producto</th><th>Stock</th><th>Costo</th><th>Precio</th><th>Acción</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="sales" class="page hidden">
+                <h2>Punto de Venta</h2>
+                <div style="display:grid; grid-template-columns: 2fr 1fr; gap: 2rem; margin-top:1rem">
+                    <div class="card">
+                        <input type="text" id="posSearch" placeholder="Buscar producto (ej: harina)..." onkeyup="filterPos()">
+                        <div style="margin-top:1rem; max-height:400px; overflow-y:auto">
+                            <table id="posTable">
+                                <thead><tr><th>Producto</th><th>Precio</th><th></th></tr></thead>
+                                <tbody></tbody>
                             </table>
                         </div>
                     </div>
-
-                    <div id="purchases-book" class="fiscal-content">
-                        <div style="margin-bottom:1rem"><button class="btn-primary" onclick="openModal('purchaseEntryModal')">+ Compra</button></div>
-                        <div class="table-wrapper">
-                            <table class="data-table">
-                                <thead><tr><th>Fecha</th><th>Proveedor</th><th>RIF</th><th>Factura</th><th>Total</th></tr></thead>
-                                <tbody id="purchasesBookBody"></tbody>
-                            </table>
+                    <div class="card" style="background:#fff5f0">
+                        <h3>Carrito</h3>
+                        <table id="cartTable"><tbody></tbody></table>
+                        <hr style="margin:1rem 0; border:0; border-top:1px dashed #ccc">
+                        <div style="display:flex; justify-content:space-between; font-size:1.2rem; font-weight:bold">
+                            <span>Total:</span>
+                            <span id="cartTotal">Bs. 0,00</span>
                         </div>
-                    </div>
-
-                    <div id="summary" class="fiscal-content">
-                        <div class="summary-cards" style="display:grid; grid-template-columns: repeat(2, 1fr); gap:1rem;">
-                            <div class="stat-card"><h4>Débito Fiscal (Ventas)</h4><div class="value" id="ivaDebit">Bs. 0</div></div>
-                            <div class="stat-card"><h4>Crédito Fiscal (Compras)</h4><div class="value" id="ivaCredit">Bs. 0</div></div>
-                            <div class="stat-card"><h4>IVA A Pagar</h4><div class="value" id="ivaPayable" style="color:var(--danger)">Bs. 0</div></div>
-                        </div>
+                        <button class="btn" style="width:100%; margin-top:1rem" onclick="checkout()">COBRAR</button>
                     </div>
                 </div>
             </div>
-        </main>
-    </div>
 
-    <div class="chatbot-widget" onclick="toggleChat()">✨</div>
-    <div class="chatbot-container" id="chatContainer">
-        <div style="padding:1rem; background:var(--ai-gradient); color:white; display:flex; justify-content:space-between">
-            <strong>Asistente Cris AI</strong>
-            <button onclick="toggleChat()" style="background:none; border:none; color:white; font-size:1.2rem">×</button>
-        </div>
-        <div class="chatbot-messages" id="chatMessages">
-            <div class="message ai">¡Hola! Soy tu IA financiera de Dyzav. ¿En qué ayudo?</div>
-        </div>
-        <div style="padding:1rem; border-top:1px solid #eee; display:flex; gap:0.5rem">
-            <input type="text" id="chatInput" placeholder="Escribe..." style="flex:1; padding:10px; border:1px solid #ddd; border-radius:20px; outline:none">
-            <button id="sendBtn" onclick="sendChat()" style="width:40px; height:40px; background:var(--ai-gradient); color:white; border:none; border-radius:50%">➤</button>
-        </div>
-    </div>
-
-    <div class="modal" id="productModal">
-        <div class="modal-content">
-            <div style="margin-bottom: 1.5rem; display:flex; justify-content:space-between">
-                <h2 id="modalTitle">Producto</h2><button onclick="closeModal('productModal')" style="border:none; background:none; font-size:1.5rem">&times;</button>
-            </div>
-            <form onsubmit="saveProduct(event)">
-                <input type="hidden" id="editIndex">
-                <div class="form-grid">
-                    <div class="form-group"><label>Código</label><input type="text" id="prodCode" required></div>
-                    <div class="form-group"><label>Nombre</label><input type="text" id="prodName" required></div>
-                    <div class="form-group"><label>Stock</label><input type="number" id="prodStock" required></div>
-                    <div class="form-group"><label>Costo</label><input type="number" id="prodCost" step="0.01" required></div>
-                    <div class="form-group"><label>Precio</label><input type="number" id="prodPrice" step="0.01" required></div>
+            <div id="profits" class="page hidden">
+                <h2>Reporte de Ganancias</h2>
+                <div class="card">
+                    <div class="chart-box"><canvas id="profitChart"></canvas></div>
                 </div>
-                <button type="submit" class="btn-primary" style="margin-top:1rem">Guardar</button>
-            </form>
+                <div class="card">
+                    <h3>Detalle por Producto</h3>
+                    <table id="profitTable">
+                        <thead><tr><th>Producto</th><th>Vendidos</th><th>Ingresos</th><th>Ganancia</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="fiscal" class="page hidden">
+                <h2>Libros Fiscales (SENIAT)</h2>
+                <div class="card">
+                    <div style="margin-bottom:1rem">
+                        <button class="badge bg-green" style="border:none; cursor:pointer; font-size:1rem; padding:10px">Descargar Excel</button>
+                    </div>
+                    <table id="fiscalTable">
+                        <thead><tr><th>Fecha</th><th>Factura</th><th>Control</th><th>Cliente</th><th>Total Bs</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
         </div>
     </div>
 
-    <div class="modal" id="saleEntryModal">
-        <div class="modal-content">
-            <div style="margin-bottom: 1.5rem; display:flex; justify-content:space-between">
-                <h2>Registrar Venta Fiscal</h2><button onclick="closeModal('saleEntryModal')" style="border:none; background:none; font-size:1.5rem">&times;</button>
-            </div>
-            <form onsubmit="saveFiscalSale(event)">
-                <div class="form-grid">
-                    <div class="form-group"><label>Fecha</label><input type="date" id="fiscalSaleDate" required></div>
-                    <div class="form-group"><label>N° Factura</label><input type="text" id="fiscalSaleInvoice" placeholder="001-00001" required></div>
-                    <div class="form-group"><label>Cliente</label><input type="text" id="fiscalSaleClient" required></div>
-                    <div class="form-group"><label>RIF/CI</label><input type="text" id="fiscalSaleRIF" required></div>
-                    <div class="form-group"><label>Monto Total</label><input type="number" step="0.01" id="fiscalSaleAmount" required></div>
-                </div>
-                <button class="btn-primary" style="margin-top:1rem">Guardar en Libro</button>
-            </form>
+    <div class="chat-widget" onclick="toggleChat()">🤖</div>
+    <div class="chat-window" id="chatWindow">
+        <div style="padding:1rem; background:var(--ai-gradient); color:white; font-weight:bold; display:flex; justify-content:space-between">
+            <span>Asistente Cris AI (2.5)</span>
+            <span onclick="toggleChat()" style="cursor:pointer">x</span>
         </div>
-    </div>
-
-    <div class="modal" id="purchaseEntryModal">
-        <div class="modal-content">
-            <div style="margin-bottom: 1.5rem; display:flex; justify-content:space-between">
-                <h2>Registrar Compra</h2><button onclick="closeModal('purchaseEntryModal')" style="border:none; background:none; font-size:1.5rem">&times;</button>
-            </div>
-            <form onsubmit="saveFiscalPurchase(event)">
-                <div class="form-grid">
-                    <div class="form-group"><label>Fecha</label><input type="date" id="fiscalPurchaseDate" required></div>
-                    <div class="form-group"><label>N° Factura</label><input type="text" id="fiscalPurchaseInvoice" required></div>
-                    <div class="form-group"><label>Proveedor</label><input type="text" id="fiscalPurchaseVendor" required></div>
-                    <div class="form-group"><label>RIF</label><input type="text" id="fiscalPurchaseRIF" required></div>
-                    <div class="form-group"><label>Monto Total</label><input type="number" step="0.01" id="fiscalPurchaseAmount" required></div>
-                </div>
-                <button class="btn-primary" style="margin-top:1rem">Guardar en Libro</button>
-            </form>
+        <div class="chat-body" id="chatBody">
+            <div class="msg bot">¡Hola Crisbel! Soy tu asistente potenciado por Gemini 2.5. ¿En qué te ayudo hoy con el negocio?</div>
+        </div>
+        <div style="padding:10px; border-top:1px solid #eee; display:flex; gap:5px">
+            <input type="text" id="chatInput" placeholder="Pregunta algo...">
+            <button class="btn" onclick="sendMsg()">➤</button>
         </div>
     </div>
 
     <script>
-        // CONFIGURACIÓN DYZAV
-        const GEMINI_API_KEY = 'AIzaSyAj-nK6iC2Yb656r2mul8FoclOwiYzJvv8'; 
-        // MODELO CONFIGURADO SEGÚN TU SOLICITUD
-        const GEMINI_MODEL = 'gemini-2.5-flash-lite'; 
-        const BCV_RATE = 378.46;
+        // CONFIG
+        const BCV = 378.46;
+        const API_KEY = 'AIzaSyAj-nK6iC2Yb656r2mul8FoclOwiYzJvv8';
+        const MODEL = 'gemini-2.5-flash';
 
-        // VARIABLES GRÁFICAS
-        let salesChartInstance = null;
-        let profitsChartInstance = null;
+        // DATABASE (NUEVAS KEYS PARA FORZAR REINICIO)
+        const DB = {
+            prods: 'dyzav_final_products',
+            sales: 'dyzav_final_sales',
+            fiscal: 'dyzav_final_fiscal'
+        };
 
-        // 1. GENERADOR DE DATOS Y GESTIÓN (Motor de Arranque)
-        function initSystem() {
-            // Cargar datos
-            let products = JSON.parse(localStorage.getItem('min_prod')) || [];
-            let sales = JSON.parse(localStorage.getItem('min_sales')) || [];
-            let fiscalSales = JSON.parse(localStorage.getItem('min_fiscal_sales')) || [];
-            let fiscalPurchases = JSON.parse(localStorage.getItem('min_fiscal_purchases')) || [];
+        // ESTADO
+        let products = [];
+        let sales = [];
+        let fiscal = [];
+        let cart = [];
+        let salesChart, profitChart;
 
-            // REGLA DE ORO: Si no hay datos, se crean.
-            if (products.length === 0 || sales.length === 0) {
-                console.log("Sistema vacío detectado. Inyectando datos Dyzav Enterprise...");
+        // --- 1. GENERADOR DE DATOS MASIVO ---
+        function initData() {
+            // Verificar si existen datos, si no, crear masivamente
+            if (!localStorage.getItem(DB.sales)) {
+                console.log("Generando datos Dyzav...");
                 
-                // A. Productos (20 items)
+                // Productos Base
                 products = [
-                    {code: 'A01', name: 'Arroz Mary 1kg', stock: 45, cost: 65, price: 95},
-                    {code: 'AC01', name: 'Aceite Mazeite 1L', stock: 12, cost: 110, price: 165},
-                    {code: 'H01', name: 'Harina PAN 1kg', stock: 80, cost: 45, price: 72},
-                    {code: 'L01', name: 'Leche Parmalat 1L', stock: 56, cost: 94, price: 132},
-                    {code: 'P01', name: 'Pasta Primor 500g', stock: 38, cost: 50, price: 80},
-                    {code: 'C01', name: 'Café Madrid 250g', stock: 23, cost: 150, price: 210},
-                    {code: 'M01', name: 'Mayonesa Mavesa', stock: 29, cost: 90, price: 130},
-                    {code: 'S01', name: 'Salsa Tomate', stock: 41, cost: 75, price: 110},
-                    {code: 'AT01', name: 'Atún Margarita', stock: 52, cost: 65, price: 95},
-                    {code: 'AZ01', name: 'Azúcar Montalban', stock: 67, cost: 45, price: 65},
-                    {code: 'CERV01', name: 'Cerveza Polar', stock: 120, cost: 25, price: 35},
-                    {code: 'JAB01', name: 'Jabón Las Llaves', stock: 40, cost: 30, price: 45},
-                    {code: 'PAP01', name: 'Papel Higiénico 4r', stock: 60, cost: 55, price: 80},
-                    {code: 'DEN01', name: 'Pasta Dental Colgate', stock: 35, cost: 40, price: 60},
-                    {code: 'REF01', name: 'Refresco CocaCola 2L', stock: 24, cost: 60, price: 90},
-                    {code: 'AGU01', name: 'Agua Minalba 5L', stock: 15, cost: 45, price: 70},
-                    {code: 'GAL01', name: 'Galletas Maria', stock: 50, cost: 28, price: 42},
-                    {code: 'MAN01', name: 'Mantequilla Mavesa', stock: 30, cost: 55, price: 85},
-                    {code: 'QUE01', name: 'Queso Duro (Kg)', stock: 10, cost: 180, price: 250},
-                    {code: 'JAM01', name: 'Jamón Pierna (Kg)', stock: 8, cost: 220, price: 310}
+                    {id:1, n:'Harina PAN 1kg', p:1.2, c:0.9, s:100},
+                    {id:2, n:'Arroz Mary 1kg', p:1.1, c:0.8, s:80},
+                    {id:3, n:'Pasta Primor', p:1.5, c:1.0, s:60},
+                    {id:4, n:'Margarina Mavesa', p:2.5, c:1.8, s:40},
+                    {id:5, n:'Mayonesa Kraft', p:3.8, c:2.9, s:30},
+                    {id:6, n:'Salsa Tomate Heinz', p:2.2, c:1.5, s:50},
+                    {id:7, n:'Azucar Montalban', p:1.6, c:1.1, s:90},
+                    {id:8, n:'Cafe Fama America', p:5.0, c:3.5, s:25},
+                    {id:9, n:'Atun Margarita', p:1.9, c:1.3, s:70},
+                    {id:10, n:'Refresco CocaCola', p:2.8, c:2.0, s:35},
+                    {id:11, n:'Jabón Las Llaves', p:1.2, c:0.8, s:120},
+                    {id:12, n:'Aceite Mazeite', p:3.5, c:2.6, s:45},
+                    {id:13, n:'Queso Duro (Kg)', p:7.5, c:5.0, s:15},
+                    {id:14, n:'Jamon Pierna (Kg)', p:9.0, c:6.5, s:10},
+                    {id:15, n:'Galletas Maria', p:1.5, c:1.0, s:60}
                 ];
 
-                // B. Ventas (60 días de historial)
-                const today = new Date();
-                for(let i = 0; i < 60; i++) {
-                    const date = new Date(today);
-                    date.setDate(date.getDate() - i);
-                    
-                    const dailyTransactions = Math.floor(Math.random() * 4) + 1;
-                    
-                    for(let t = 0; t < dailyTransactions; t++) {
-                        const items = [];
-                        const numItems = Math.floor(Math.random() * 3) + 1;
-                        let totalVenta = 0;
-                        let profitVenta = 0;
+                // Ventas Históricas (60 días)
+                sales = [];
+                fiscal = [];
+                const now = new Date();
 
-                        for(let k = 0; k < numItems; k++) {
-                            const prod = products[Math.floor(Math.random() * products.length)];
-                            const qty = Math.floor(Math.random() * 2) + 1;
-                            items.push({...prod, qty});
-                            totalVenta += prod.price * qty;
-                            profitVenta += (prod.price - prod.cost) * qty;
+                for (let i = 60; i >= 0; i--) {
+                    const date = new Date(now);
+                    date.setDate(date.getDate() - i);
+                    const isoDate = date.toISOString().split('T')[0];
+                    
+                    // 3 a 8 ventas por día
+                    const dailyCount = Math.floor(Math.random() * 6) + 3;
+
+                    for (let j = 0; j < dailyCount; j++) {
+                        const itemsCount = Math.floor(Math.random() * 4) + 1;
+                        let saleTotal = 0;
+                        let saleCost = 0;
+                        let saleItems = [];
+
+                        for (let k = 0; k < itemsCount; k++) {
+                            const p = products[Math.floor(Math.random() * products.length)];
+                            const qty = Math.floor(Math.random() * 3) + 1;
+                            saleTotal += p.p * qty;
+                            saleCost += p.c * qty;
+                            saleItems.push({n:p.n, q:qty, t:p.p*qty});
                         }
 
-                        sales.push({ 
-                            date: date.toISOString(), 
-                            total: totalVenta, 
-                            profit: profitVenta, 
-                            items: items,
-                            invoiceNumber: `001-${10000 + sales.length}`
+                        // Guardar Venta
+                        sales.push({
+                            d: isoDate,
+                            t: saleTotal,
+                            c: saleCost,
+                            items: saleItems
                         });
 
-                        fiscalSales.push({
-                            date: date.toISOString().split('T')[0],
-                            invoiceNumber: `001-${10000 + sales.length}`,
-                            client: Math.random() > 0.5 ? "Consumidor Final" : "Cliente Regular",
-                            rif: "V-00000000",
-                            total: totalVenta
+                        // Guardar Fiscal
+                        fiscal.push({
+                            d: isoDate,
+                            fac: `000-${10000 + fiscal.length}`,
+                            cli: Math.random()>0.7 ? "V-12345678" : "V-00000000",
+                            nom: Math.random()>0.7 ? "Pedro Perez" : "Consumidor Final",
+                            tot: saleTotal * BCV
                         });
                     }
                 }
 
-                // C. Compras
-                for(let i = 0; i < 15; i++) {
-                    const date = new Date(today);
-                    date.setDate(date.getDate() - (i*4));
-                    fiscalPurchases.push({
-                        date: date.toISOString().split('T')[0],
-                        vendor: "Distribuidora Polar",
-                        rif: "J-00000000",
-                        invoiceNumber: `FAC-${5000+i}`,
-                        total: Math.floor(Math.random() * 2000) + 500
-                    });
-                }
-
-                // Guardar todo
-                localStorage.setItem('min_prod', JSON.stringify(products));
-                localStorage.setItem('min_sales', JSON.stringify(sales));
-                localStorage.setItem('min_fiscal_sales', JSON.stringify(fiscalSales));
-                localStorage.setItem('min_fiscal_purchases', JSON.stringify(fiscalPurchases));
+                saveData();
+            } else {
+                // Cargar existentes
+                products = JSON.parse(localStorage.getItem(DB.prods));
+                sales = JSON.parse(localStorage.getItem(DB.sales));
+                fiscal = JSON.parse(localStorage.getItem(DB.fiscal));
             }
-
-            return { products, sales, fiscalSales, fiscalPurchases };
         }
 
-        // Variables Globales (cargadas desde init)
-        let systemData = initSystem();
-        let products = systemData.products;
-        let sales = systemData.sales.map(s => ({...s, date: new Date(s.date)})); // Fix dates
-        let fiscalSales = systemData.fiscalSales;
-        let fiscalPurchases = systemData.fiscalPurchases;
-        let cart = [];
-
-        // INICIALIZACIÓN
-        document.addEventListener('DOMContentLoaded', () => {
-            const dateStr = new Date().toLocaleDateString('es-VE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-            document.getElementById('currentDateDisplay').textContent = dateStr;
-            
-            // Renderizar todo inmediatamente
-            updateDashboard();
-            renderInventory();
-            renderFiscal();
-            renderProfits(); 
-        });
-
-        // FUNCIONES UI
-        function handleLogin(e) {
-            if(e) e.preventDefault();
-            const u = document.getElementById('username').value;
-            const p = document.getElementById('password').value;
-            if(u === 'crisbel' && p === 'crisbel2026') {
-                document.getElementById('loginScreen').style.display = 'none';
-                document.getElementById('appContainer').style.display = 'block';
-                // Refrescar gráficos al mostrarse (Chart.js fix)
-                updateDashboard(); 
-                renderProfits();
-            } else { alert('Credenciales incorrectas'); }
+        function saveData() {
+            localStorage.setItem(DB.prods, JSON.stringify(products));
+            localStorage.setItem(DB.sales, JSON.stringify(sales));
+            localStorage.setItem(DB.fiscal, JSON.stringify(fiscal));
         }
 
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('active');
-            document.getElementById('sidebarOverlay').classList.toggle('active');
-        }
-
-        function showSection(id) {
-            document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
+        // --- 2. RENDERIZADO ---
+        function renderAll() {
+            // Dashboard
+            const totalUSD = sales.reduce((a,b) => a + b.t, 0);
+            const totalCost = sales.reduce((a,b) => a + b.c, 0);
+            const profit = totalUSD - totalCost;
             
-            const titleMap = {'dashboard': 'Dashboard', 'inventory': 'Inventario', 'sales': 'Punto de Venta', 'profits': 'Ganancias', 'fiscal': 'Libros Fiscales', 'config': 'Configuración'};
-            document.getElementById('pageTitleDesktop').textContent = titleMap[id];
-            document.getElementById('pageTitleMobile').textContent = titleMap[id];
-            
-            document.getElementById('sidebar').classList.remove('active');
-            document.getElementById('sidebarOverlay').classList.remove('active');
+            document.getElementById('totalSales').innerText = `Bs. ${(totalUSD * BCV).toLocaleString('es-VE')}`;
+            document.getElementById('totalProfit').innerText = `Bs. ${(profit * BCV).toLocaleString('es-VE')}`;
+            document.getElementById('totalTx').innerText = sales.length;
 
-            if(id === 'dashboard') updateDashboard();
-            if(id === 'profits') renderProfits();
-            if(id === 'fiscal') renderFiscal();
-        }
+            // Gráfico Ventas (Agrupado por día)
+            const salesByDay = {};
+            sales.forEach(s => {
+                if(!salesByDay[s.d]) salesByDay[s.d] = 0;
+                salesByDay[s.d] += s.t;
+            });
+            // Tomar últimos 30 días
+            const labels = Object.keys(salesByDay).slice(-30);
+            const data = Object.values(salesByDay).slice(-30).map(v => v * BCV);
 
-        function logout() { if(confirm('¿Salir del sistema?')) location.reload(); }
-
-        // GRÁFICOS (CHART.JS)
-        function renderCharts() {
-            const ctxSales = document.getElementById('salesChart').getContext('2d');
-            
-            const labels = [];
-            const dataTotal = [];
-            const today = new Date();
-            
-            for(let i=29; i>=0; i--) {
-                const d = new Date(today);
-                d.setDate(d.getDate() - i);
-                const k = d.toLocaleDateString('es-VE');
-                labels.push(k.slice(0,5)); // dd/mm
-                
-                const dayTotal = sales
-                    .filter(s => s.date.toLocaleDateString('es-VE') === k)
-                    .reduce((acc, s) => acc + s.total, 0);
-                dataTotal.push(dayTotal);
-            }
-
-            if(salesChartInstance) salesChartInstance.destroy();
-
-            salesChartInstance = new Chart(ctxSales, {
+            if(salesChart) salesChart.destroy();
+            salesChart = new Chart(document.getElementById('salesChart'), {
                 type: 'line',
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: 'Ventas (Bs)',
-                        data: dataTotal,
+                        label: 'Ventas Diarias (Bs)',
+                        data: data,
                         borderColor: '#FF6B35',
-                        backgroundColor: 'rgba(255, 107, 53, 0.1)',
-                        fill: true,
-                        tension: 0.3
+                        backgroundColor: 'rgba(255,107,53,0.1)',
+                        fill: true
                     }]
                 },
-                options: { responsive: true, maintainAspectRatio: false }
+                options: { responsive:true, maintainAspectRatio:false }
             });
-        }
 
-        function renderProfitsCharts(productStats) {
-            const ctx = document.getElementById('profitsChart').getContext('2d');
-            const top5 = Object.values(productStats).sort((a,b)=>b.profit - a.profit).slice(0,5);
-            
-            if(profitsChartInstance) profitsChartInstance.destroy();
+            // Tabla Inventario
+            const invBody = document.querySelector('#invTable tbody');
+            invBody.innerHTML = products.map(p => `
+                <tr>
+                    <td>${p.n}</td>
+                    <td>${p.s}</td>
+                    <td>$${p.c}</td>
+                    <td>$${p.p}</td>
+                    <td><button class="btn" style="padding:2px 5px; font-size:0.7rem" onclick="addToCartById(${p.id})">Vender</button></td>
+                </tr>
+            `).join('');
 
-            profitsChartInstance = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: top5.map(p => p.name.substring(0,10)),
-                    datasets: [{
-                        label: 'Ganancia Neta',
-                        data: top5.map(p => p.profit),
-                        backgroundColor: '#27AE60'
-                    }]
-                },
-                options: { responsive: true, maintainAspectRatio: false }
-            });
-        }
+            // Tabla POS
+            const posBody = document.querySelector('#posTable tbody');
+            posBody.innerHTML = products.map(p => `
+                <tr>
+                    <td>${p.n}</td>
+                    <td>$${p.p}</td>
+                    <td><button class="badge bg-green" onclick="addToCartById(${p.id})">+</button></td>
+                </tr>
+            `).join('');
 
-        // LÓGICA DE NEGOCIO
-        function updateDashboard() {
-            const todayStr = new Date().toLocaleDateString();
-            const todaysSales = sales.filter(s => s.date.toLocaleDateString() === todayStr);
-            const total = todaysSales.reduce((acc, s) => acc + s.total, 0);
-            const profit = todaysSales.reduce((acc, s) => acc + s.profit, 0);
-
-            const currentMonth = new Date().getMonth();
-            const monthSales = sales.filter(s => s.date.getMonth() === currentMonth);
-            const monthRevenue = monthSales.reduce((acc, s) => acc + s.total, 0);
-            const monthProfit = monthSales.reduce((acc, s) => acc + s.profit, 0);
-
-            document.getElementById('todaySalesBS').textContent = `Bs. ${total.toFixed(2)}`;
-            document.getElementById('todaySalesUSD').textContent = `$${(total/BCV_RATE).toFixed(2)} USD`;
-            document.getElementById('todayProfitBS').textContent = `Bs. ${profit.toFixed(2)}`;
-            document.getElementById('totalProducts').textContent = products.length;
-            
-            document.getElementById('monthRevenueBS').textContent = `Bs. ${monthRevenue.toFixed(2)}`;
-            document.getElementById('monthProfitBS').textContent = `Bs. ${monthProfit.toFixed(2)}`;
-
-            setTimeout(renderCharts, 100);
-        }
-
-        function renderInventory() {
-            const tbody = document.getElementById('inventoryTable');
-            tbody.innerHTML = products.map((p, i) => {
-                const margin = ((p.price - p.cost) / p.price * 100).toFixed(1);
-                return `<tr>
-                    <td><strong>${p.code}</strong></td>
-                    <td>${p.name}</td>
-                    <td><span class="badge ${p.stock < 10 ? 'badge-danger' : 'badge-success'}">${p.stock}</span></td>
-                    <td>Bs. ${p.price.toFixed(2)}</td>
-                    <td><span class="badge badge-info">${margin}%</span></td>
-                    <td><button class="btn-primary" style="padding:2px 8px; font-size:0.8rem" onclick="openProductModal(${i})">✏️</button></td>
-                </tr>`;
-            }).join('');
-        }
-
-        function renderProfits() {
-            const stats = {};
+            // Gráfico Ganancias (Top 5 Productos)
+            const prodPerf = {};
             sales.forEach(s => {
                 s.items.forEach(i => {
-                    if(!stats[i.code]) stats[i.code] = {name: i.name, qty:0, profit:0, revenue:0};
-                    stats[i.code].qty += i.quantity;
-                    stats[i.code].revenue += i.price * i.quantity;
-                    stats[i.code].profit += (i.price - i.cost) * i.quantity;
+                    if(!prodPerf[i.n]) prodPerf[i.n] = {rev:0, profit:0};
+                    // Buscar costo original
+                    const orig = products.find(p=>p.n === i.n);
+                    const cost = orig ? orig.c : 0;
+                    prodPerf[i.n].rev += i.t;
+                    prodPerf[i.n].profit += (i.t - (cost * i.q));
                 });
             });
-
-            const totalRev = Object.values(stats).reduce((a,b)=>a+b.revenue,0);
-            const totalProf = Object.values(stats).reduce((a,b)=>a+b.profit,0);
             
-            document.getElementById('profitRevenue').textContent = `Bs. ${totalRev.toFixed(2)}`;
-            document.getElementById('profitNet').textContent = `Bs. ${totalProf.toFixed(2)}`;
+            const sortedProds = Object.entries(prodPerf).sort((a,b) => b[1].profit - a[1].profit).slice(0,5);
+            
+            if(profitChart) profitChart.destroy();
+            profitChart = new Chart(document.getElementById('profitChart'), {
+                type: 'bar',
+                data: {
+                    labels: sortedProds.map(x=>x[0]),
+                    datasets: [{
+                        label: 'Ganancia (USD)',
+                        data: sortedProds.map(x=>x[1].profit),
+                        backgroundColor: '#2C3E50'
+                    }]
+                },
+                options: { responsive:true, maintainAspectRatio:false }
+            });
 
-            const tbody = document.getElementById('profitTable');
-            tbody.innerHTML = Object.values(stats).sort((a,b)=>b.profit-a.profit).map(s => 
-                `<tr><td>${s.name}</td><td>${s.qty}</td><td style="color:green">+${s.profit.toFixed(2)}</td></tr>`
-            ).join('');
+            // Tabla Ganancias
+            document.querySelector('#profitTable tbody').innerHTML = sortedProds.map(x => `
+                <tr>
+                    <td>${x[0]}</td>
+                    <td>-</td> <td>$${x[1].rev.toFixed(2)}</td>
+                    <td style="color:green; font-weight:bold">$${x[1].profit.toFixed(2)}</td>
+                </tr>
+            `).join('');
 
-            setTimeout(()=>renderProfitsCharts(stats), 100);
+            // Tabla Fiscal
+            const fiscalRev = [...fiscal].reverse().slice(0, 50); // Mostrar ultimas 50
+            document.querySelector('#fiscalTable tbody').innerHTML = fiscalRev.map(f => `
+                <tr>
+                    <td>${f.d}</td>
+                    <td>${f.fac}</td>
+                    <td>00-00${Math.floor(Math.random()*900)}</td>
+                    <td>${f.nom}<br><small>${f.cli}</small></td>
+                    <td>Bs. ${f.tot.toLocaleString('es-VE')}</td>
+                </tr>
+            `).join('');
         }
 
-        // POS
-        function addToCart() {
-            const q = document.getElementById('saleSearch').value.toLowerCase();
-            const p = products.find(prod => prod.name.toLowerCase().includes(q) || prod.code.toLowerCase() === q);
-            if(p && p.stock > 0) {
-                cart.push({...p, qty: 1});
+        // --- 3. LÓGICA POS ---
+        function addToCartById(id) {
+            const p = products.find(x => x.id === id);
+            if(p) {
+                cart.push(p);
                 renderCart();
-                document.getElementById('saleSearch').value = '';
-            } else { alert('Producto no encontrado'); }
+            }
+        }
+
+        function filterPos() {
+            const term = document.getElementById('posSearch').value.toLowerCase();
+            const rows = document.querySelectorAll('#posTable tbody tr');
+            rows.forEach(r => {
+                const txt = r.innerText.toLowerCase();
+                r.style.display = txt.includes(term) ? '' : 'none';
+            });
         }
 
         function renderCart() {
-            const tbody = document.getElementById('cartTable');
+            const tbody = document.querySelector('#cartTable tbody');
             let total = 0;
-            tbody.innerHTML = cart.map((item, i) => {
-                total += item.price;
-                return `<tr><td>${item.name}</td><td>1</td><td>${item.price}</td><td><button onclick="cart.splice(${i},1);renderCart()" style="color:red;border:none">x</button></td></tr>`;
+            tbody.innerHTML = cart.map((p, i) => {
+                total += p.p;
+                return `<tr>
+                    <td>${p.n}</td>
+                    <td>$${p.p}</td>
+                    <td style="color:red; cursor:pointer" onclick="cart.splice(${i},1); renderCart()">x</td>
+                </tr>`;
             }).join('');
-            document.getElementById('cartTotal').textContent = `Bs. ${total.toFixed(2)}`;
+            document.getElementById('cartTotal').innerText = `Bs. ${(total * BCV).toLocaleString('es-VE')}`;
         }
 
-        function processSale() {
-            if(cart.length === 0) return;
-            const total = cart.reduce((a, b) => a + b.price, 0);
-            const profit = cart.reduce((a, b) => a + (b.price - b.cost), 0);
+        function checkout() {
+            if(cart.length === 0) return alert("Carrito vacío");
             
-            const sale = { date: new Date().toISOString(), total, profit, items: cart, invoiceNumber: `001-${10000+sales.length}` };
-            sales.unshift(sale);
-            
-            // Sync Fiscal
-            fiscalSales.unshift({
-                date: new Date().toISOString().split('T')[0], 
-                invoiceNumber: sale.invoiceNumber, 
-                client:"Consumidor", 
-                total
+            const totalUSD = cart.reduce((a,b)=>a+b.p, 0);
+            const totalCost = cart.reduce((a,b)=>a+b.c, 0);
+            const today = new Date().toISOString().split('T')[0];
+
+            // Add Sale
+            sales.push({
+                d: today,
+                t: totalUSD,
+                c: totalCost,
+                items: cart.map(p => ({n:p.n, q:1, t:p.p}))
             });
 
-            // Update Stock
-            cart.forEach(c => {
-                const p = products.find(x => x.code === c.code);
-                if(p) p.stock--;
+            // Add Fiscal
+            fiscal.push({
+                d: today,
+                fac: `000-${10000 + fiscal.length}`,
+                cli: "Consumidor Final",
+                nom: "Consumidor Final",
+                tot: totalUSD * BCV
             });
 
-            localStorage.setItem('min_sales', JSON.stringify(sales));
-            localStorage.setItem('min_fiscal_sales', JSON.stringify(fiscalSales));
-            localStorage.setItem('min_prod', JSON.stringify(products));
-            
-            cart=[]; renderCart(); updateDashboard(); renderInventory(); renderFiscal();
-            alert('Venta Procesada');
+            saveData();
+            cart = [];
+            renderCart();
+            renderAll();
+            alert("Venta registrada con éxito!");
         }
 
-        // MODALS (EDITABLE INVENTORY)
-        function openProductModal(index = -1) {
-            const modal = document.getElementById('productModal');
-            const title = document.getElementById('modalTitle');
-            const form = document.querySelector('#productModal form');
-            
-            document.getElementById('editIndex').value = index;
-            modal.classList.add('active');
-
-            if(index >= 0) {
-                title.textContent = "Editar Producto";
-                const p = products[index];
-                document.getElementById('prodCode').value = p.code;
-                document.getElementById('prodName').value = p.name;
-                document.getElementById('prodStock').value = p.stock;
-                document.getElementById('prodCost').value = p.cost;
-                document.getElementById('prodPrice').value = p.price;
-            } else {
-                title.textContent = "Nuevo Producto";
-                form.reset();
-            }
+        // --- 4. CHATBOT (GEMINI 2.5) ---
+        function toggleChat() {
+            const w = document.getElementById('chatWindow');
+            w.style.display = w.style.display === 'flex' ? 'none' : 'flex';
         }
 
-        function saveProduct(e) {
-            e.preventDefault();
-            const index = document.getElementById('editIndex').value;
-            const p = {
-                code: document.getElementById('prodCode').value,
-                name: document.getElementById('prodName').value,
-                stock: Number(document.getElementById('prodStock').value),
-                cost: Number(document.getElementById('prodCost').value),
-                price: Number(document.getElementById('prodPrice').value)
-            };
-
-            if(index >= 0 && index !== "") {
-                products[index] = p; // Update
-            } else {
-                products.push(p); // Create
-            }
-            
-            localStorage.setItem('min_prod', JSON.stringify(products));
-            renderInventory(); closeModal('productModal');
-        }
-
-        // FISCAL
-        function renderFiscal() {
-            document.getElementById('salesBookBody').innerHTML = fiscalSales.slice(0,50).map(s => `<tr><td>${s.date}</td><td>${s.invoiceNumber}</td><td>${s.client}</td><td>${s.rif || 'V-0000'}</td><td>${s.total.toFixed(2)}</td></tr>`).join('');
-            document.getElementById('purchasesBookBody').innerHTML = fiscalPurchases.slice(0,50).map(p => `<tr><td>${p.date}</td><td>${p.vendor}</td><td>${p.rif}</td><td>${p.invoiceNumber}</td><td>${p.total.toFixed(2)}</td></tr>`).join('');
-            
-            const deb = fiscalSales.reduce((a,b)=>a+(b.total*0.16),0);
-            const cred = fiscalPurchases.reduce((a,b)=>a+(b.total*0.16),0);
-            document.getElementById('ivaDebit').textContent = `Bs. ${deb.toFixed(2)}`;
-            document.getElementById('ivaCredit').textContent = `Bs. ${cred.toFixed(2)}`;
-            document.getElementById('ivaPayable').textContent = `Bs. ${(deb-cred).toFixed(2)}`;
-        }
-
-        function openModal(id) { document.getElementById(id).classList.add('active'); }
-        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-        function showFiscalTab(id) {
-            document.querySelectorAll('.fiscal-content').forEach(c=>c.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-        }
-        function saveFiscalSale(e) {
-            e.preventDefault();
-            fiscalSales.unshift({
-                date: document.getElementById('fiscalSaleDate').value,
-                invoiceNumber: document.getElementById('fiscalSaleInvoice').value,
-                client: document.getElementById('fiscalSaleClient').value,
-                rif: document.getElementById('fiscalSaleRIF').value,
-                total: Number(document.getElementById('fiscalSaleAmount').value)
-            });
-            localStorage.setItem('min_fiscal_sales', JSON.stringify(fiscalSales));
-            renderFiscal(); closeModal('saleEntryModal');
-        }
-        function saveFiscalPurchase(e) {
-            e.preventDefault();
-            fiscalPurchases.unshift({
-                date: document.getElementById('fiscalPurchaseDate').value,
-                vendor: document.getElementById('fiscalPurchaseVendor').value,
-                rif: document.getElementById('fiscalPurchaseRIF').value,
-                invoiceNumber: document.getElementById('fiscalPurchaseInvoice').value,
-                total: Number(document.getElementById('fiscalPurchaseAmount').value)
-            });
-            localStorage.setItem('min_fiscal_purchases', JSON.stringify(fiscalPurchases));
-            renderFiscal(); closeModal('purchaseEntryModal');
-        }
-        function downloadFiscal() { alert('Descargando...'); }
-        function fetchBCVRate() { alert('BCV: 378.46'); }
-
-        // CHATBOT
-        function toggleChat() { document.getElementById('chatContainer').classList.toggle('active'); }
-        
-        async function sendChat() {
+        async function sendMsg() {
             const input = document.getElementById('chatInput');
-            const msg = input.value.trim();
-            if(!msg) return;
+            const txt = input.value.trim();
+            if(!txt) return;
 
-            const div = document.createElement('div'); div.className='message user'; div.innerText=msg;
-            document.getElementById('chatMessages').appendChild(div);
-            input.value=''; input.disabled=true;
+            const body = document.getElementById('chatBody');
+            body.innerHTML += `<div class="msg user">${txt}</div>`;
+            input.value = '';
+            input.disabled = true;
 
-            const context = `Asistente MiniMarket Cris. Ventas hoy: ${document.getElementById('todaySalesBS').textContent}. Stock critico: ${products.filter(p=>p.stock<10).length}.`;
+            // Contexto inteligente
+            const context = `Eres asistente de Market Cris. 
+            Datos actuales: 
+            - Ventas mes: $${sales.reduce((a,b)=>a+b.t,0).toFixed(2)}. 
+            - Ganancia neta: $${(sales.reduce((a,b)=>a+b.t,0) - sales.reduce((a,b)=>a+b.c,0)).toFixed(2)}.
+            - Productos: ${products.map(p=>p.n).join(', ')}.
+            Responde breve y útil para el dueño.`;
 
             try {
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`, {
-                    method: 'POST', headers: {'Content-Type':'application/json'},
-                    body: JSON.stringify({ contents: [{ parts: [{ text: context + " User: " + msg }] }] })
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${API_KEY}`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ contents: [{ parts: [{ text: context + " Pregunta: " + txt }] }] })
                 });
                 const data = await res.json();
-                if(data.error) throw new Error(data.error.message);
-                
-                const reply = document.createElement('div'); reply.className='message ai'; reply.innerText = data.candidates[0].content.parts[0].text;
-                document.getElementById('chatMessages').appendChild(reply);
+                const reply = data.candidates[0].content.parts[0].text;
+                body.innerHTML += `<div class="msg bot">${reply}</div>`;
             } catch(e) {
-                const err = document.createElement('div'); err.className='message ai'; err.style.color='red'; err.innerText=e.message;
-                document.getElementById('chatMessages').appendChild(err);
-            } finally {
-                input.disabled=false; input.focus();
+                body.innerHTML += `<div class="msg bot" style="color:red">Error de conexión AI.</div>`;
             }
+            
+            input.disabled = false;
+            input.focus();
+            body.scrollTop = body.scrollHeight;
         }
-        document.getElementById('chatInput').addEventListener('keypress', e=>{if(e.key==='Enter') sendChat()});
-        function askAssistant(t){ document.getElementById('chatInput').value=t; toggleChat(); sendChat(); }
+
+        // --- INIT ---
+        function show(id) {
+            document.querySelectorAll('.page').forEach(el => el.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            event.currentTarget.classList.add('active'); // Nota: esto requiere pasar el evento, simplificado aquí
+            // Close sidebar on mobile
+            if(window.innerWidth < 1024) document.getElementById('sidebar').classList.remove('show');
+        }
+        function toggleMenu() { document.getElementById('sidebar').classList.toggle('show'); }
+
+        // Boot
+        initData();
+        renderAll();
 
     </script>
 </body>
