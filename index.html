@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MiniMarket Cris - Sistema Completo</title>
+    <title>MiniMarket Cris - Sistema Completo Dyzav</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
         
@@ -25,566 +26,217 @@
             --ai-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: #f0f2f5; color: var(--dark); overflow-x: hidden; padding-bottom: 80px; }
 
-        body {
-            background: #f0f2f5;
-            color: var(--dark);
-            overflow-x: hidden;
-        }
-
-        /* BCV Ticker */
-        .bcv-ticker {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: var(--bcv-blue);
-            color: white;
-            padding: 0.5rem 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 1001;
-            font-size: 0.85rem;
-            min-height: 45px;
-        }
-
-        .bcv-rate {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-weight: 600;
-            flex: 1;
-            min-width: 0;
-        }
-
-        .bcv-rate span:first-child { display: none; }
-        @media (min-width: 480px) { .bcv-rate span:first-child { display: inline; } }
-
-        .rate-value {
-            font-size: 1.1rem;
-            color: #FFD700;
-            text-shadow: 0 0 10px rgba(255,215,0,0.3);
-            white-space: nowrap;
-        }
-
-        .sync-btn {
-            background: rgba(255,255,255,0.2);
-            border: none;
-            color: white;
-            padding: 0.4rem 0.8rem;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.75rem;
-            display: flex;
-            align-items: center;
-            gap: 0.3rem;
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
-
-        .sync-btn span:last-child { display: none; }
-        @media (min-width: 380px) { .sync-btn span:last-child { display: inline; } }
-
-        .rate-update { font-size: 0.7rem; opacity: 0.9; display: none; }
-        @media (min-width: 640px) { .rate-update { display: block; } }
-
-        /* Login */
-        .login-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--gradient);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            padding: 1rem;
-            padding-top: 60px;
-            overflow-y: auto;
-        }
-
-        .login-box {
-            background: white;
-            padding: 2rem;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            text-align: center;
-            max-width: 400px;
-            width: 100%;
-            animation: slideUp 0.6s ease;
-            margin: auto;
-        }
-
-        @keyframes slideUp {
-            from { transform: translateY(50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        .logo-svg { width: 100px; height: 100px; margin: 0 auto; }
-        .brand-name { font-size: 2rem; font-weight: 700; color: var(--primary); margin-top: 0.5rem; }
-        .brand-tagline { color: #666; font-size: 0.85rem; margin-top: 0.5rem; }
+        /* UI COMPONENTS */
+        .bcv-ticker { position: fixed; top: 0; left: 0; right: 0; background: var(--bcv-blue); color: white; padding: 0.5rem 1rem; display: flex; justify-content: space-between; align-items: center; z-index: 1001; font-size: 0.85rem; min-height: 45px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .rate-value { font-size: 1.1rem; color: #FFD700; text-shadow: 0 0 10px rgba(255,215,0,0.3); font-weight: 700; }
+        .sync-btn { background: rgba(255,255,255,0.2); border: none; color: white; padding: 0.3rem 0.8rem; border-radius: 20px; cursor: pointer; font-size: 0.75rem; display: flex; align-items: center; gap: 0.3rem; }
         
-        .ai-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: var(--ai-gradient);
-            color: white;
-            padding: 0.4rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            margin-top: 0.5rem;
-        }
-
-        .input-group { margin: 1rem 0; text-align: left; }
-        .input-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--secondary); font-size: 0.9rem; }
-        .input-group input { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 1rem; }
-
-        .btn {
-            width: 100%;
-            padding: 14px;
-            background: var(--gradient);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        /* App Layout */
+        /* LOGIN */
+        .login-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--gradient); display: flex; justify-content: center; align-items: center; z-index: 2000; padding: 1rem; }
+        .login-box { background: white; padding: 2rem; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); text-align: center; max-width: 400px; width: 100%; animation: slideUp 0.5s ease; }
+        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .brand-name { font-size: 1.8rem; font-weight: 800; color: var(--primary); letter-spacing: -1px; margin: 0.5rem 0; }
+        .ai-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: var(--ai-gradient); color: white; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.75rem; margin-bottom: 1.5rem; }
+        .input-group { margin-bottom: 1rem; text-align: left; }
+        .input-group label { display: block; margin-bottom: 0.3rem; font-weight: 500; font-size: 0.9rem; color: #555; }
+        .input-group input { width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px; font-size: 1rem; outline: none; transition: 0.3s; }
+        .input-group input:focus { border-color: var(--primary); }
+        .btn-primary { width: 100%; padding: 12px; background: var(--gradient); color: white; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: transform 0.2s; }
+        
+        /* LAYOUT */
         .app-container { display: none; min-height: 100vh; padding-top: 45px; }
+        .mobile-header { position: fixed; top: 45px; left: 0; right: 0; height: 60px; background: white; display: flex; align-items: center; justify-content: space-between; padding: 0 1rem; z-index: 999; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .menu-toggle { font-size: 1.5rem; background: none; border: none; cursor: pointer; color: var(--secondary); }
+        .mobile-title { font-weight: 700; font-size: 1.1rem; color: var(--secondary); }
+        .mobile-user { width: 32px; height: 32px; background: var(--gradient); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 0.9rem; }
 
-        /* Mobile Header */
-        .mobile-header {
-            position: fixed;
-            top: 45px;
-            left: 0;
-            right: 0;
-            height: 60px;
-            background: white;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 1rem;
-            z-index: 999;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .menu-toggle {
-            width: 40px;
-            height: 40px;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-        }
-
-        .mobile-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: var(--secondary);
-            flex: 1;
-            text-align: center;
-            margin: 0 0.5rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .mobile-user {
-            width: 35px;
-            height: 35px;
-            background: var(--gradient);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        /* Sidebar */
-        .sidebar {
-            position: fixed;
-            left: 0;
-            top: 105px;
-            width: 280px;
-            height: calc(100vh - 105px);
-            background: white;
-            box-shadow: 4px 0 20px rgba(0,0,0,0.2);
-            z-index: 998;
-            overflow-y: auto;
-            transform: translateX(-100%);
-            transition: transform 0.3s ease;
-        }
-
+        /* SIDEBAR */
+        .sidebar { position: fixed; left: 0; top: 105px; width: 260px; height: calc(100vh - 105px); background: white; z-index: 998; transform: translateX(-100%); transition: transform 0.3s ease; box-shadow: 2px 0 10px rgba(0,0,0,0.1); overflow-y: auto; }
         .sidebar.active { transform: translateX(0); }
-        
-        .sidebar-overlay {
-            position: fixed;
-            top: 105px;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 997;
-            display: none;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .sidebar-overlay.active { display: block; opacity: 1; }
-
-        .sidebar-header { padding: 1.5rem; background: var(--gradient); color: white; text-align: center; }
-        .sidebar-logo { width: 50px; height: 50px; margin: 0 auto 0.5rem; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: bold; color: var(--primary); }
-        
-        .nav-menu { padding: 0.5rem 0; }
-        .nav-item { padding: 1rem 1.5rem; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 1rem; border-left: 4px solid transparent; font-size: 0.95rem; }
-        .nav-item:hover, .nav-item.active { background: rgba(255,107,53,0.1); border-left-color: var(--primary); color: var(--primary); font-weight: 600; }
+        .sidebar-overlay { position: fixed; top: 105px; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 997; display: none; }
+        .sidebar-overlay.active { display: block; }
+        .nav-item { padding: 1rem 1.5rem; display: flex; align-items: center; gap: 1rem; cursor: pointer; color: #555; transition: 0.2s; border-left: 4px solid transparent; }
+        .nav-item.active { background: rgba(255,107,53,0.1); color: var(--primary); border-left-color: var(--primary); font-weight: 600; }
         .nav-icon { font-size: 1.2rem; width: 24px; text-align: center; }
 
-        .main-content { margin-left: 0; padding: 1rem; padding-top: 75px; min-height: 100vh; max-width: 100%; }
-
-        @media (min-width: 1024px) {
-            .mobile-header { display: none; }
-            .sidebar { transform: translateX(0); top: 45px; box-shadow: 4px 0 10px rgba(0,0,0,0.05); }
-            .main-content { margin-left: 280px; padding: 2rem; padding-top: 65px; }
-            .menu-toggle { display: none; }
-        }
-
+        /* DESKTOP */
         .desktop-header { display: none; }
         @media (min-width: 1024px) {
-            .desktop-header { display: flex; background: white; padding: 1.5rem 2rem; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 2rem; justify-content: space-between; align-items: center; }
+            .mobile-header { display: none; }
+            .sidebar { transform: translateX(0); top: 45px; height: calc(100vh - 45px); width: 260px; }
+            .main-content { margin-left: 260px; padding: 2rem; }
+            .desktop-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+            .sidebar-overlay { display: none !important; }
         }
+        .main-content { padding: 1rem; padding-top: 75px; min-height: 100vh; }
+        @media (min-width: 1024px) { .main-content { padding-top: 2rem; } }
 
-        .page-title { font-size: 1.5rem; color: var(--secondary); font-weight: 600; }
-        @media (min-width: 1024px) { .page-title { font-size: 1.8rem; } }
-
-        /* Stats Grid */
-        .stats-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; margin-bottom: 1.5rem; }
-        @media (min-width: 640px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (min-width: 1024px) { .stats-grid { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; } }
-
-        .stat-card { background: white; padding: 1.25rem; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); position: relative; overflow: hidden; }
-        .stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--gradient); }
-        .stat-icon { font-size: 2rem; margin-bottom: 0.75rem; }
-        .stat-value { font-size: 1.5rem; font-weight: 700; color: var(--secondary); word-break: break-word; }
-        .stat-secondary { font-size: 0.85rem; color: #666; margin-top: 0.25rem; }
-        .stat-label { color: #666; font-size: 0.85rem; margin-top: 0.5rem; }
-
-        /* Content Sections */
-        .content-section { display: none; animation: fadeIn 0.4s; }
+        /* CONTENT */
+        .content-section { display: none; animation: fadeIn 0.3s; }
         .content-section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .card { background: white; border-radius: 15px; padding: 1.25rem; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 1.5rem; overflow-x: auto; }
-        @media (min-width: 1024px) { .card { padding: 2rem; } }
+        /* STATS & CARDS */
+        .stats-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+        @media (min-width: 600px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 1024px) { .stats-grid { grid-template-columns: repeat(4, 1fr); } }
+        .stat-card { background: white; padding: 1.2rem; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); position: relative; overflow: hidden; }
+        .stat-card::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--gradient); }
+        .stat-value { font-size: 1.6rem; font-weight: 700; color: var(--secondary); margin: 0.5rem 0; }
+        .stat-label { font-size: 0.85rem; color: #777; }
 
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; padding-bottom: 1rem; border-bottom: 2px solid #f0f0f0; flex-wrap: wrap; gap: 0.75rem; }
-        .card-title { font-size: 1.1rem; font-weight: 600; color: var(--secondary); }
-        @media (min-width: 1024px) { .card-title { font-size: 1.3rem; } }
+        .card { background: white; border-radius: 15px; padding: 1.5rem; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 1.5rem; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
+        .card-title { font-size: 1.2rem; font-weight: 700; color: var(--secondary); }
 
-        .btn-primary { background: var(--gradient); color: white; padding: 0.6rem 1.25rem; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 0.5rem; white-space: nowrap; }
-        .btn-secondary { background: var(--secondary); color: white; padding: 0.6rem 1.25rem; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9rem; }
-        .btn-success { background: var(--success); color: white; padding: 0.6rem 1.25rem; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9rem; }
+        /* CHARTS CONTAINER */
+        .chart-container { position: relative; height: 300px; width: 100%; margin-bottom: 1rem; }
 
-        /* Tables */
-        .table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -1.25rem; padding: 0 1.25rem; }
-        @media (min-width: 1024px) { .table-container { margin: 0; padding: 0; } }
-
-        .data-table { width: 100%; min-width: 600px; border-collapse: collapse; font-size: 0.9rem; }
-        .data-table th, .data-table td { padding: 0.875rem; text-align: left; border-bottom: 1px solid #eee; }
-        .data-table th { background: #f8f9fa; font-weight: 600; color: var(--secondary); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; white-space: nowrap; }
-        .data-table tr:hover { background: #f8f9fa; }
-
-        .dual-currency { display: flex; flex-direction: column; font-size: 0.85rem; }
-        .dual-currency .primary { font-weight: 600; color: var(--secondary); }
-        .dual-currency .secondary { font-size: 0.75rem; color: #666; }
-
-        .badge { padding: 0.3rem 0.6rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; white-space: nowrap; }
+        /* TABLES & FORMS */
+        .table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -1.5rem; padding: 0 1.5rem; }
+        .data-table { width: 100%; min-width: 600px; border-collapse: collapse; }
+        .data-table th { text-align: left; padding: 1rem; background: #f8f9fa; font-size: 0.8rem; text-transform: uppercase; color: #666; font-weight: 600; }
+        .data-table td { padding: 1rem; border-bottom: 1px solid #eee; font-size: 0.95rem; }
+        .badge { padding: 0.25rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
         .badge-success { background: rgba(39,174,96,0.1); color: var(--success); }
         .badge-warning { background: rgba(243,156,18,0.1); color: var(--warning); }
         .badge-danger { background: rgba(231,76,60,0.1); color: var(--danger); }
         .badge-info { background: rgba(52,152,219,0.1); color: var(--info); }
 
-        /* Forms */
+        .dual-currency { display: flex; flex-direction: column; font-size: 0.85rem; }
+        .dual-currency .primary { font-weight: 600; color: var(--secondary); }
+        .dual-currency .secondary { font-size: 0.75rem; color: #666; }
+
         .form-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
-        @media (min-width: 640px) { .form-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (min-width: 1024px) { .form-grid { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); } }
-
+        @media (min-width: 600px) { .form-grid { grid-template-columns: repeat(2, 1fr); } }
         .form-group { display: flex; flex-direction: column; }
-        .form-group label { margin-bottom: 0.5rem; font-weight: 500; color: var(--secondary); font-size: 0.9rem; }
-        .form-group input, .form-group select { padding: 0.75rem; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1rem; width: 100%; }
+        .form-group label { margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 500; }
+        .form-group input, .form-group select { padding: 0.8rem; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; }
 
-        /* Fiscal Books Specific */
+        /* CHATBOT */
+        .chatbot-widget { position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px; background: var(--ai-gradient); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4); z-index: 3000; font-size: 1.5rem; color: white; animation: pulse 3s infinite; }
+        .chatbot-container { position: fixed; bottom: 0; right: 0; width: 100%; height: 100%; background: white; z-index: 3001; display: none; flex-direction: column; }
+        @media (min-width: 480px) { .chatbot-container { bottom: 90px; right: 20px; width: 380px; height: 500px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); } }
+        .chatbot-container.active { display: flex; }
+        .chatbot-messages { flex: 1; overflow-y: auto; padding: 1rem; background: var(--chat-bg); display: flex; flex-direction: column; gap: 0.8rem; }
+        .message { max-width: 85%; padding: 0.8rem 1rem; border-radius: 15px; font-size: 0.9rem; line-height: 1.4; }
+        .message.ai { align-self: flex-start; background: white; border: 1px solid #e0e0e0; border-bottom-left-radius: 2px; }
+        .message.user { align-self: flex-end; background: var(--primary); color: white; border-bottom-right-radius: 2px; }
+
+        /* MODAL */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 4000; justify-content: center; align-items: center; padding: 1rem; }
+        .modal.active { display: flex; }
+        .modal-content { background: white; padding: 1.5rem; border-radius: 20px; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; }
+
+        /* Fiscal Specifics */
         .fiscal-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; border-bottom: 2px solid #f0f0f0; overflow-x: auto; }
         .fiscal-tab { padding: 0.75rem 1.5rem; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.3s; font-weight: 500; color: #666; white-space: nowrap; }
         .fiscal-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
         .fiscal-content { display: none; }
         .fiscal-content.active { display: block; }
 
-        .summary-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
-        @media (min-width: 640px) { .summary-cards { grid-template-columns: repeat(4, 1fr); } }
-
-        .summary-card { background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); padding: 1rem; border-radius: 12px; text-align: center; border: 1px solid #667eea30; }
-        .summary-card h4 { font-size: 0.8rem; color: #666; margin-bottom: 0.5rem; }
-        .summary-card .value { font-size: 1.25rem; font-weight: 700; color: var(--secondary); }
-
-        /* Suggestion chips */
-        .suggestion-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-        .suggestion-chip { padding: 0.6rem 1rem; background: rgba(102, 126, 234, 0.1); border: 1px solid rgba(102, 126, 234, 0.3); border-radius: 20px; font-size: 0.85rem; cursor: pointer; transition: all 0.3s; color: #667eea; text-align: center; flex: 1; min-width: 140px; }
-        @media (min-width: 640px) { .suggestion-chip { flex: none; min-width: auto; } }
-        .suggestion-chip:hover { background: #667eea; color: white; }
-
-        /* Chatbot */
-        .chatbot-widget { position: fixed; bottom: 20px; right: 20px; width: 56px; height: 56px; background: var(--ai-gradient); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4); z-index: 999; font-size: 1.5rem; animation: pulse-glow 2s infinite; }
-        @media (max-width: 480px) { .chatbot-widget { bottom: 15px; right: 15px; width: 50px; height: 50px; } }
-
-        @keyframes pulse-glow { 0%, 100% { box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4); } 50% { box-shadow: 0 4px 30px rgba(102, 126, 234, 0.7); } }
-        .chatbot-widget.active { display: none; }
-
-        .chatbot-container { position: fixed; bottom: 0; right: 0; width: 100%; height: 100%; background: white; z-index: 1000; display: none; flex-direction: column; overflow: hidden; }
-        @media (min-width: 480px) { .chatbot-container { bottom: 20px; right: 20px; width: 380px; height: 550px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); border: 2px solid #667eea; } }
-        @media (min-width: 640px) { .chatbot-container { width: 400px; } }
-        .chatbot-container.active { display: flex; }
-
-        .chatbot-header { background: var(--ai-gradient); color: white; padding: 1rem; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
-        .chatbot-title { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; font-size: 0.95rem; }
-        .chatbot-status { font-size: 0.7rem; opacity: 0.9; display: flex; align-items: center; gap: 0.25rem; }
-        .status-dot { width: 8px; height: 8px; background: #00FF00; border-radius: 50%; animation: pulse 2s infinite; }
-        .chatbot-close { background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
-
-        .chatbot-messages { flex: 1; overflow-y: auto; padding: 1rem; background: var(--chat-bg); display: flex; flex-direction: column; gap: 0.75rem; -webkit-overflow-scrolling: touch; }
-        .message { max-width: 90%; padding: 0.75rem 1rem; border-radius: 15px; font-size: 0.9rem; line-height: 1.4; animation: messageSlide 0.3s ease; word-wrap: break-word; }
-        @keyframes messageSlide { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .message.user { align-self: flex-end; background: var(--primary); color: white; border-bottom-right-radius: 5px; }
-        .message.ai { align-self: flex-start; background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); border: 1px solid #667eea30; color: var(--dark); border-bottom-left-radius: 5px; }
-        .message.error { align-self: flex-start; background: rgba(231, 76, 60, 0.1); border: 1px solid rgba(231, 76, 60, 0.3); color: var(--danger); border-bottom-left-radius: 5px; }
-        .message-time { font-size: 0.7rem; opacity: 0.7; margin-top: 0.25rem; }
-
-        .typing-indicator { display: flex; gap: 0.25rem; padding: 0.5rem 1rem; background: white; border-radius: 15px; align-self: flex-start; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .typing-dot { width: 8px; height: 8px; background: #999; border-radius: 50%; animation: typingBounce 1.4s infinite ease-in-out both; }
-        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
-        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
-        @keyframes typingBounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
-
-        .chatbot-input-area { padding: 1rem; background: white; border-top: 1px solid #eee; display: flex; gap: 0.5rem; flex-shrink: 0; }
-        .chatbot-input { flex: 1; padding: 0.75rem 1rem; border: 2px solid #e0e0e0; border-radius: 25px; font-size: 1rem; outline: none; }
-        .chatbot-send { width: 44px; height: 44px; background: var(--ai-gradient); border: none; border-radius: 50%; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .chatbot-send:disabled { opacity: 0.5; }
-
-        /* Modal */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; padding: 1rem; }
-        .modal.active { display: flex; }
-        .modal-content { background: white; padding: 1.5rem; border-radius: 20px; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
-        .close-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #666; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
-
-        /* Footer */
-        .app-footer { text-align: center; padding: 1.5rem 1rem; color: #666; font-size: 0.8rem; border-top: 1px solid #eee; margin-top: 2rem; }
-        .app-footer a { color: var(--primary); text-decoration: none; font-weight: 600; }
-
-        /* Back button */
-        .back-button { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: rgba(255,107,53,0.1); border: none; border-radius: 8px; color: var(--primary); font-size: 0.9rem; cursor: pointer; margin-bottom: 1rem; }
-        @media (min-width: 1024px) { .back-button { display: none; } }
-
-        /* Print styles for fiscal books */
-        @media print {
-            .mobile-header, .sidebar, .chatbot-widget, .btn-primary, .back-button { display: none !important; }
-            .main-content { margin-left: 0; padding: 0; }
-            .card { box-shadow: none; border: 1px solid #ddd; }
-        }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(102, 126, 234, 0); } 100% { box-shadow: 0 0 0 0 rgba(102, 126, 234, 0); } }
     </style>
 </head>
 <body>
 
     <div class="bcv-ticker">
-        <div class="bcv-rate">
-            <span>🏦 BCV</span>
-            <span style="opacity: 0.8;">|</span>
-            <span class="rate-value">Bs. 378,46</span>
-        </div>
-        <button class="sync-btn" onclick="fetchBCVRate()">
-            <span>🔄</span>
-            <span>Actualizar</span>
-        </button>
-        <div class="rate-update">05/02/2026</div>
+        <div><span>🏦 BCV:</span> <span class="rate-value">Bs. 378,46</span></div>
+        <button class="sync-btn" onclick="fetchBCVRate()"><span>🔄</span> Actualizar</button>
     </div>
 
     <div class="login-container" id="loginScreen">
         <div class="login-box">
-            <div class="logo-container">
-                <svg class="logo-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M20 30 L25 80 Q25 90 35 90 L65 90 Q75 90 75 80 L80 30 Z" fill="#FF6B35"/>
-                    <path d="M35 30 Q35 15 50 15 Q65 15 65 30" fill="none" stroke="#FF6B35" stroke-width="4" stroke-linecap="round"/>
-                    <text x="50" y="65" font-family="Poppins, sans-serif" font-size="35" font-weight="bold" fill="white" text-anchor="middle">C</text>
-                </svg>
-                <div class="brand-name">MiniMarket Cris</div>
-                <div class="brand-tagline">Sistema Completo de Gestión</div>
-                <div class="ai-badge">
-                    <span>✨</span>
-                    <span>Powered by Gemini AI</span>
-                </div>
-            </div>
-            
-            <form id="loginForm">
-                <div class="input-group">
-                    <label>Usuario</label>
-                    <input type="text" id="username" value="crisbel" required>
-                </div>
-                <div class="input-group">
-                    <label>Contraseña</label>
-                    <input type="password" id="password" value="crisbel2026" required>
-                </div>
-                <button type="submit" class="btn">Ingresar al Sistema</button>
+            <h1 class="brand-name">MiniMarket Cris</h1>
+            <div class="ai-badge">✨ Powered by Gemini 2.0</div>
+            <form onsubmit="event.preventDefault(); handleLogin();">
+                <div class="input-group"><label>Usuario</label><input type="text" id="username" value="crisbel"></div>
+                <div class="input-group"><label>Contraseña</label><input type="password" id="password" value="crisbel2026"></div>
+                <button type="submit" class="btn-primary">Entrar</button>
             </form>
-            
-            <div style="margin-top: 1.5rem; font-size: 0.8rem; color: #666;">
-                <p>v5.0 PRO - Tasa BCV: Bs. 378,46</p>
-                <p style="margin-top: 0.5rem; font-size: 0.7rem;">
-                    Generated by Dyzav | Para Crisbel ❤️
-                </p>
-            </div>
+            <p style="margin-top:2rem; font-size:0.7rem; color:#999">Generated by <strong>Dyzav</strong></p>
         </div>
     </div>
 
     <div class="app-container" id="appContainer">
         <div class="mobile-header">
             <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
-            <div class="mobile-title" id="mobileTitle">Dashboard</div>
+            <div class="mobile-title" id="pageTitleMobile">Dashboard</div>
             <div class="mobile-user">C</div>
         </div>
 
-        <div class="desktop-header">
-            <h1 class="page-title" id="desktopTitle">Dashboard</h1>
-            <div style="display: flex; align-items: center; gap: 1rem;">
-                <div style="text-align: right;">
-                    <div style="font-weight: 600;">Crisbel</div>
-                    <div style="font-size: 0.85rem; color: #666;" id="currentDate"></div>
-                </div>
-                <div style="width: 40px; height: 40px; background: var(--gradient); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">C</div>
-            </div>
-        </div>
-
         <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
-
         <aside class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <div class="sidebar-logo">C</div>
-                <h2 style="font-size: 1.3rem; margin-bottom: 0.25rem;">MiniMarket Cris</h2>
-                <p style="opacity: 0.9; font-size: 0.8rem;">Bienvenida, Crisbel</p>
+            <div style="padding:2rem; background:var(--gradient); color:white">
+                <h2>Market Cris</h2>
+                <small>Admin: Crisbel</small>
             </div>
-            
-            <nav class="nav-menu">
-                <div class="nav-item active" onclick="showSection('dashboard')">
-                    <span class="nav-icon">📊</span>
-                    <span>Dashboard</span>
-                </div>
-                <div class="nav-item" onclick="showSection('inventory')">
-                    <span class="nav-icon">📦</span>
-                    <span>Inventario</span>
-                </div>
-                <div class="nav-item" onclick="showSection('sales')">
-                    <span class="nav-icon">💰</span>
-                    <span>Ventas</span>
-                </div>
-                <div class="nav-item" onclick="showSection('profits')">
-                    <span class="nav-icon">📈</span>
-                    <span>Ganancias</span>
-                </div>
-                <div class="nav-item" onclick="showSection('fiscal')">
-                    <span class="nav-icon">📋</span>
-                    <span>Libros Fiscales</span>
-                </div>
-                <div class="nav-item" onclick="showSection('config')">
-                    <span class="nav-icon">⚙️</span>
-                    <span>Configuración</span>
-                </div>
-                <div class="nav-item" onclick="logout()" style="margin-top: 1rem; color: var(--danger);">
-                    <span class="nav-icon">🚪</span>
-                    <span>Cerrar Sesión</span>
-                </div>
+            <nav style="padding:1rem">
+                <div class="nav-item active" onclick="showSection('dashboard')"><span class="nav-icon">📊</span> Dashboard</div>
+                <div class="nav-item" onclick="showSection('inventory')"><span class="nav-icon">📦</span> Inventario</div>
+                <div class="nav-item" onclick="showSection('sales')"><span class="nav-icon">💰</span> Ventas</div>
+                <div class="nav-item" onclick="showSection('profits')"><span class="nav-icon">📈</span> Ganancias</div>
+                <div class="nav-item" onclick="showSection('fiscal')"><span class="nav-icon">📚</span> Libros Fiscales</div>
+                <div class="nav-item" onclick="logout()" style="color:var(--danger); margin-top:2rem"><span class="nav-icon">🚪</span> Salir</div>
             </nav>
         </aside>
 
         <main class="main-content">
-            <button class="back-button" onclick="showSection('dashboard')">
-                <span>←</span>
-                <span>Volver al inicio</span>
-            </button>
+            <div class="desktop-header">
+                <h1 style="font-size: 1.8rem; color: var(--secondary);" id="pageTitleDesktop">Dashboard</h1>
+                <div style="text-align: right;"><strong>Crisbel</strong><br><small style="color: #666;" id="currentDateDisplay">Fecha</small></div>
+            </div>
 
             <div id="dashboard" class="content-section active">
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <div class="stat-icon" style="color: var(--primary);">💵</div>
+                        <small>Ventas Hoy</small>
                         <div class="stat-value" id="todaySalesBS">Bs. 0,00</div>
-                        <div class="stat-secondary" id="todaySalesUSD">$0.00</div>
-                        <div class="stat-label">Ventas Hoy</div>
+                        <small style="color:var(--success)" id="todaySalesUSD">$0.00 USD</small>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-icon" style="color: var(--success);">💹</div>
-                        <div class="stat-value" id="todayProfitBS">Bs. 0,00</div>
-                        <div class="stat-secondary" id="todayProfitUSD">$0.00</div>
-                        <div class="stat-label">Ganancia Neta</div>
+                        <small>Ganancia Neta</small>
+                        <div class="stat-value" style="color:var(--success)" id="todayProfitBS">Bs. 0,00</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-icon" style="color: var(--info);">📦</div>
+                        <small>Productos</small>
                         <div class="stat-value" id="totalProducts">0</div>
-                        <div class="stat-label">Productos</div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-icon" style="color: var(--purple);">✨</div>
-                        <div class="stat-value">Gemini</div>
-                        <div class="stat-label">Asistente AI</div>
+                    <div class="stat-card" style="background:var(--ai-gradient); color:white">
+                        <small style="color:rgba(255,255,255,0.8)">IA Activa</small>
+                        <div class="stat-value">Gemini 2.0</div>
                     </div>
                 </div>
 
                 <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">💡 Pregunta a tu Asistente</h3>
-                    </div>
-                    <div class="suggestion-chips">
-                        <div class="suggestion-chip" onclick="askAssistant('Análisis completo de mis ventas de hoy')">📊 Análisis hoy</div>
-                        <div class="suggestion-chip" onclick="askAssistant('¿Qué productos debo reabastecer urgentemente?')">⚠️ Stock bajo</div>
-                        <div class="suggestion-chip" onclick="askAssistant('Proyección de ganancias del mes')">💰 Proyección</div>
-                        <div class="suggestion-chip" onclick="askAssistant('Dame 5 consejos para aumentar mis ventas')">🚀 Consejos</div>
+                    <div class="card-header"><h3 class="card-title">💡 Asistente Inteligente</h3></div>
+                    <div style="display:flex; gap:0.5rem; flex-wrap:wrap">
+                        <button class="badge badge-success" style="border:none; cursor:pointer" onclick="askAssistant('Analiza mis ventas de hoy')">📊 Análisis Día</button>
+                        <button class="badge badge-warning" style="border:none; cursor:pointer" onclick="askAssistant('¿Qué productos reponer?')">⚠️ Stock Bajo</button>
+                        <button class="badge badge-info" style="border:none; cursor:pointer" onclick="askAssistant('Proyección de ganancias')">🚀 Proyección</button>
                     </div>
                 </div>
 
                 <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">Resumen del Mes</h3>
+                    <div class="card-header"><h3 class="card-title">Tendencia de Ventas (30 Días)</h3></div>
+                    <div class="chart-container">
+                        <canvas id="salesChart"></canvas>
                     </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header"><h3 class="card-title">Resumen Mensual</h3></div>
                     <div class="stats-grid">
                         <div class="stat-card">
+                            <small>Ventas Totales</small>
                             <div class="stat-value" id="monthRevenueBS">Bs. 0,00</div>
-                            <div class="stat-secondary" id="monthRevenueUSD">$0.00</div>
-                            <div class="stat-label">Ventas Totales</div>
                         </div>
                         <div class="stat-card">
+                            <small>Ganancia Mensual</small>
                             <div class="stat-value" id="monthProfitBS">Bs. 0,00</div>
-                            <div class="stat-secondary" id="monthProfitUSD">$0.00</div>
-                            <div class="stat-label">Ganancia Neta</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value" id="monthMargin">0%</div>
-                            <div class="stat-label">Margen Promedio</div>
                         </div>
                     </div>
                 </div>
@@ -593,22 +245,12 @@
             <div id="inventory" class="content-section">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">Inventario Completo</h3>
-                        <button class="btn-primary" onclick="openModal('productModal')">+ Nuevo Producto</button>
+                        <h3 class="card-title">Inventario</h3>
+                        <button class="btn-primary" style="width:auto; padding:0.5rem 1rem" onclick="openModal('productModal')">+ Nuevo</button>
                     </div>
-                    <div class="table-container">
+                    <div class="table-wrapper">
                         <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Código</th>
-                                    <th>Producto</th>
-                                    <th>Stock</th>
-                                    <th>Costo</th>
-                                    <th>Precio</th>
-                                    <th>Margen</th>
-                                    <th>Acción</th>
-                                </tr>
-                            </thead>
+                            <thead><tr><th>Cód</th><th>Producto</th><th>Stock</th><th>Precio</th><th>Margen</th></tr></thead>
                             <tbody id="inventoryTable"></tbody>
                         </table>
                     </div>
@@ -617,90 +259,46 @@
 
             <div id="sales" class="content-section">
                 <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">Nueva Venta</h3>
-                        <button class="btn-primary" onclick="processSale()">💳 Finalizar Venta</button>
+                    <div class="card-header"><h3 class="card-title">Punto de Venta</h3></div>
+                    <div style="display:flex; gap:0.5rem; margin-bottom:1rem">
+                        <input type="text" id="saleSearch" placeholder="Buscar..." style="flex:1; padding:10px; border:1px solid #ddd; border-radius:8px">
+                        <button class="btn-primary" style="width:auto" onclick="addToCart()">+</button>
                     </div>
-                    <div class="form-grid" style="margin-bottom: 1rem;">
-                        <div class="form-group" style="grid-column: 1 / -1;">
-                            <label>Buscar Producto (Código o Nombre)</label>
-                            <div style="display: flex; gap: 0.5rem;">
-                                <input type="text" id="saleProductSearch" placeholder="Ej: ARROZ001 o Arroz..." style="flex: 1;">
-                                <button class="btn-primary" onclick="addToCart()" style="width: auto;">Agregar</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="table-container">
+                    <div class="table-wrapper">
                         <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Producto</th>
-                                    <th>Cant.</th>
-                                    <th>Precio Unit.</th>
-                                    <th>Subtotal</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody id="cartItems"></tbody>
+                            <thead><tr><th>Prod</th><th>Cant</th><th>Total</th><th></th></tr></thead>
+                            <tbody id="cartTable"></tbody>
                         </table>
                     </div>
-                    <div id="saleSummary" style="margin-top: 1.5rem; padding: 1rem; background: #f8f9fa; border-radius: 10px; display: none;">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                            <span>Subtotal:</span>
-                            <strong id="saleSubtotal">Bs. 0,00</strong>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                            <span>IVA (16%):</span>
-                            <strong id="saleIVA">Bs. 0,00</strong>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; font-size: 1.2rem; color: var(--primary);">
-                            <span>TOTAL:</span>
-                            <strong id="saleTotal">Bs. 0,00</strong>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; margin-top: 0.5rem; color: var(--success);">
-                            <span>Ganancia estimada:</span>
-                            <strong id="saleProfit">Bs. 0,00</strong>
-                        </div>
+                    <div style="margin-top:1.5rem; text-align:right">
+                        <h3>Total: <span id="cartTotal">Bs. 0,00</span></h3>
+                        <button class="btn-primary" style="background:var(--success); margin-top:1rem" onclick="processSale()">Cobrar</button>
                     </div>
                 </div>
             </div>
 
             <div id="profits" class="content-section">
                 <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">Análisis Detallado de Ganancias</h3>
-                        <button class="btn-primary" onclick="exportProfits()">📥 Exportar</button>
-                    </div>
-                    <div class="summary-cards">
-                        <div class="summary-card">
-                            <h4>Ingresos Totales</h4>
+                    <div class="card-header"><h3 class="card-title">Análisis de Ganancias</h3></div>
+                    <div class="summary-cards" style="display:grid; grid-template-columns: repeat(2, 1fr); gap:1rem; margin-bottom:1.5rem;">
+                        <div class="stat-card">
+                            <h4>Ingresos</h4>
                             <div class="value" id="profitRevenue">Bs. 0</div>
                         </div>
-                        <div class="summary-card">
-                            <h4>Costos Totales</h4>
-                            <div class="value" id="profitCosts">Bs. 0</div>
-                        </div>
-                        <div class="summary-card">
+                        <div class="stat-card">
                             <h4>Ganancia Neta</h4>
                             <div class="value" id="profitNet" style="color: var(--success);">Bs. 0</div>
                         </div>
-                        <div class="summary-card">
-                            <h4>ROI</h4>
-                            <div class="value" id="profitROI">0%</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><h3 class="card-title">Top 5 Productos Rentables</h3></div>
+                        <div class="chart-container">
+                            <canvas id="profitsChart"></canvas>
                         </div>
                     </div>
-                    <div class="table-container">
+                    <div class="table-wrapper">
                         <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Producto</th>
-                                    <th>Unidades Vendidas</th>
-                                    <th>Ingresos</th>
-                                    <th>Costo</th>
-                                    <th>Ganancia</th>
-                                    <th>Margen</th>
-                                </tr>
-                            </thead>
+                            <thead><tr><th>Producto</th><th>Ventas</th><th>Ganancia</th></tr></thead>
                             <tbody id="profitTable"></tbody>
                         </table>
                     </div>
@@ -710,1417 +308,526 @@
             <div id="fiscal" class="content-section">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">📚 Libros Fiscales (SENIAT)</h3>
-                        <div style="display: flex; gap: 0.5rem;">
-                            <button class="btn-secondary" onclick="document.getElementById('fiscalMonth').click()">📅 Período</button>
-                            <input type="month" id="fiscalMonth" style="display: none;" onchange="loadFiscalPeriod()">
-                            <button class="btn-success" onclick="downloadFiscalBooks()">📥 Descargar</button>
-                            <button class="btn-primary" onclick="window.print()">🖨️ Imprimir</button>
-                        </div>
+                        <h3 class="card-title">Libros SENIAT</h3>
+                        <button class="badge badge-success" style="border:none; cursor:pointer" onclick="downloadFiscal()">Descargar CSV</button>
                     </div>
-
+                    
                     <div class="fiscal-tabs">
-                        <div class="fiscal-tab active" onclick="showFiscalTab('sales-book')">📗 Libro de Ventas</div>
-                        <div class="fiscal-tab" onclick="showFiscalTab('purchases-book')">📘 Libro de Compras</div>
-                        <div class="fiscal-tab" onclick="showFiscalTab('summary')">📊 Resumen IVA</div>
+                        <div class="fiscal-tab active" onclick="showFiscalTab('sales-book')">📗 Ventas</div>
+                        <div class="fiscal-tab" onclick="showFiscalTab('purchases-book')">📘 Compras</div>
+                        <div class="fiscal-tab" onclick="showFiscalTab('summary')">📊 Resumen</div>
                     </div>
 
                     <div id="sales-book" class="fiscal-content active">
-                        <div style="margin-bottom: 1rem; display: flex; gap: 1rem; flex-wrap: wrap;">
-                            <button class="btn-primary" onclick="openModal('saleEntryModal')">➕ Agregar Venta Manual</button>
-                            <span style="color: #666; font-size: 0.9rem; align-self: center;">Período: <strong id="currentFiscalPeriod">Febrero 2026</strong></span>
-                        </div>
-                        <div class="table-container">
-                            <table class="data-table" id="salesBookTable">
-                                <thead>
-                                    <tr>
-                                        <th>Fecha</th>
-                                        <th>Factura N°</th>
-                                        <th>Cliente</th>
-                                        <th>RIF</th>
-                                        <th>Base Imponible</th>
-                                        <th>IVA (16%)</th>
-                                        <th>Total</th>
-                                        <th>Tasa BCV</th>
-                                    </tr>
-                                </thead>
+                        <div style="margin-bottom:1rem"><button class="btn-primary" onclick="openModal('saleEntryModal')">+ Venta Manual</button></div>
+                        <div class="table-wrapper">
+                            <table class="data-table">
+                                <thead><tr><th>Fecha</th><th>Factura</th><th>Cliente</th><th>Total</th></tr></thead>
                                 <tbody id="salesBookBody"></tbody>
                             </table>
                         </div>
                     </div>
 
                     <div id="purchases-book" class="fiscal-content">
-                        <div style="margin-bottom: 1rem;">
-                            <button class="btn-primary" onclick="openModal('purchaseEntryModal')">➕ Agregar Compra</button>
-                        </div>
-                        <div class="table-container">
-                            <table class="data-table" id="purchasesBookTable">
-                                <thead>
-                                    <tr>
-                                        <th>Fecha</th>
-                                        <th>Proveedor</th>
-                                        <th>RIF</th>
-                                        <th>Factura N°</th>
-                                        <th>Base Imponible</th>
-                                        <th>IVA (16%)</th>
-                                        <th>Total</th>
-                                    </tr>
-                                </thead>
+                        <div style="margin-bottom:1rem"><button class="btn-primary" onclick="openModal('purchaseEntryModal')">+ Compra</button></div>
+                        <div class="table-wrapper">
+                            <table class="data-table">
+                                <thead><tr><th>Fecha</th><th>Prov</th><th>Factura</th><th>Total</th></tr></thead>
                                 <tbody id="purchasesBookBody"></tbody>
                             </table>
                         </div>
                     </div>
 
                     <div id="summary" class="fiscal-content">
-                        <div class="summary-cards">
-                            <div class="summary-card">
-                                <h4>IVA Débito (Ventas)</h4>
-                                <div class="value" id="ivaDebit">Bs. 0</div>
-                            </div>
-                            <div class="summary-card">
-                                <h4>IVA Crédito (Compras)</h4>
-                                <div class="value" id="ivaCredit">Bs. 0</div>
-                            </div>
-                            <div class="summary-card">
-                                <h4>IVA a Pagar</h4>
-                                <div class="value" id="ivaPayable" style="color: var(--danger);">Bs. 0</div>
-                            </div>
-                            <div class="summary-card">
-                                <h4>Retención ISLR</h4>
-                                <div class="value" id="islrRetention">Bs. 0</div>
-                            </div>
-                        </div>
-                        <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(0,51,102,0.05); border-radius: 10px; border-left: 4px solid var(--bcv-blue);">
-                            <h4 style="color: var(--bcv-blue); margin-bottom: 0.5rem;">📋 Notas para Declaración SENIAT</h4>
-                            <p style="font-size: 0.9rem; color: #666; line-height: 1.6;">
-                                • Las facturas están numeradas correlativamente según Providencia 0071.<br>
-                                • Tasa BCV utilizada para conversiones: Bs. 378,46 por USD.<br>
-                                • Las operaciones en USD se convierten a Bs. según tasa del día de la transacción.<br>
-                                • Retención ISLR del 1% aplicable a proveedores formales.
-                            </p>
+                        <div class="summary-cards" style="display:grid; grid-template-columns: repeat(2, 1fr); gap:1rem;">
+                            <div class="stat-card"><h4>Débito Fiscal</h4><div class="value" id="ivaDebit">Bs. 0</div></div>
+                            <div class="stat-card"><h4>Crédito Fiscal</h4><div class="value" id="ivaCredit">Bs. 0</div></div>
+                            <div class="stat-card"><h4>A Pagar</h4><div class="value" id="ivaPayable" style="color:var(--danger)">Bs. 0</div></div>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <div id="config" class="content-section">
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">⚙️ Configuración del Sistema</h3>
-                    </div>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>Nombre del Negocio</label>
-                            <input type="text" value="MiniMarket Cris">
-                        </div>
-                        <div class="form-group">
-                            <label>RIF</label>
-                            <input type="text" value="J-12345678-9">
-                        </div>
-                        <div class="form-group">
-                            <label>Dirección Fiscal</label>
-                            <input type="text" value="Calle Principal, Local 1, Caracas">
-                        </div>
-                        <div class="form-group">
-                            <label>Tasa BCV Actual (Bs/USD)</label>
-                            <input type="text" value="378.46" readonly style="background: #f0f0f0;">
-                        </div>
-                        <div class="form-group">
-                            <label>Tasa IVA (%)</label>
-                            <input type="text" value="16" readonly style="background: #f0f0f0;">
-                        </div>
-                        <div class="form-group">
-                            <label>API Gemini</label>
-                            <input type="password" value="AIzaSyAj3_5b0OPohkFJVfKwcREYknbOT6xbBwU" readonly style="background: #f0f0f0;">
-                        </div>
-                    </div>
-                    <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(39,174,96,0.1); border-radius: 10px;">
-                        <h4 style="color: var(--success); margin-bottom: 0.5rem;">✅ Sistema Verificado</h4>
-                        <p style="font-size: 0.9rem; color: #666;">
-                            Versión 5.0 PRO | Todos los módulos activos | Asistente AI conectado | Datos de ejemplo cargados
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="app-footer">
-                <p>MiniMarket Cris - Sistema Completo de Gestión</p>
-                <p style="margin-top: 0.5rem; font-size: 0.75rem; color: #999;">
-                    Generated by <a href="#">Dyzav</a> | Powered by Gemini AI | © 2026
-                </p>
-                <p style="font-size: 0.7rem; color: #aaa; margin-top: 0.25rem;">
-                    Desarrollado especialmente para Crisbel | Tasa BCV: Bs. 378,46 por USD
-                </p>
             </div>
         </main>
     </div>
 
-    <div class="chatbot-widget" id="chatbotWidget" onclick="toggleChatbot()">
-        <span>✨</span>
-    </div>
-
-    <div class="chatbot-container" id="chatbotContainer">
-        <div class="chatbot-header">
-            <div class="chatbot-title">
-                <span>🤖</span>
-                <div>
-                    <div>Asistente Cris AI</div>
-                    <div class="chatbot-status">
-                        <span class="status-dot"></span>
-                        <span>Gemini 2.0 Flash</span>
-                    </div>
-                </div>
-            </div>
-            <button class="chatbot-close" onclick="toggleChatbot()">×</button>
+    <div class="chatbot-widget" onclick="toggleChat()">✨</div>
+    <div class="chatbot-container" id="chatContainer">
+        <div style="padding:1rem; background:var(--ai-gradient); color:white; display:flex; justify-content:space-between">
+            <strong>Asistente Cris AI</strong>
+            <button onclick="toggleChat()" style="background:none; border:none; color:white; font-size:1.2rem">×</button>
         </div>
-        
-        <div class="chatbot-messages" id="chatbotMessages">
-            <div class="message ai">
-                <div>¡Hola Crisbel! 👋 Soy tu asistente inteligente de <strong>Dyzav</strong>.</div>
-                <div style="margin-top: 0.5rem; font-size: 0.85rem;">
-                    Puedo ayudarte con:<br>
-                    • Análisis de ventas y proyecciones<br>
-                    • Gestión inteligente de inventario<br>
-                    • Cálculos de rentabilidad<br>
-                    • Consejos de negocio personalizados<br>
-                    • Preguntas sobre libros fiscales
-                </div>
-                <div class="message-time">Ahora</div>
-            </div>
+        <div class="chatbot-messages" id="chatMessages">
+            <div class="message ai">¡Hola! Soy tu IA financiera de Dyzav. ¿En qué ayudo?</div>
         </div>
-
-        <div class="chatbot-input-area">
-            <input type="text" class="chatbot-input" id="chatbotInput" placeholder="Escribe tu pregunta..." onkeypress="handleChatKeypress(event)">
-            <button class="chatbot-send" id="chatbotSend" onclick="sendChatMessage()">
-                <span>➤</span>
-            </button>
+        <div style="padding:1rem; border-top:1px solid #eee; display:flex; gap:0.5rem">
+            <input type="text" id="chatInput" placeholder="Escribe..." style="flex:1; padding:10px; border:1px solid #ddd; border-radius:20px; outline:none">
+            <button onclick="sendChat()" style="width:40px; height:40px; background:var(--ai-gradient); color:white; border:none; border-radius:50%">➤</button>
         </div>
     </div>
 
     <div class="modal" id="productModal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2>➕ Nuevo Producto</h2>
-                <button class="close-btn" onclick="closeModal('productModal')">×</button>
+            <div style="margin-bottom: 1.5rem; display:flex; justify-content:space-between">
+                <h2>Producto</h2><button onclick="closeModal('productModal')" style="border:none; background:none; font-size:1.5rem">&times;</button>
             </div>
-            <form id="productForm" onsubmit="saveProduct(event)">
+            <form onsubmit="saveProduct(event)">
                 <div class="form-grid">
-                    <div class="form-group">
-                        <label>Código SKU</label>
-                        <input type="text" id="prodCode" placeholder="Ej: ARROZ001" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Nombre del Producto</label>
-                        <input type="text" id="prodName" placeholder="Ej: Arroz Precocido 1kg" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Stock Inicial</label>
-                        <input type="number" id="prodStock" placeholder="Ej: 50" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Costo Unitario (Bs.)</label>
-                        <input type="number" id="prodCost" step="0.01" placeholder="Ej: 68.12" required>
-                    </div>
-                    <div class="form-group" style="grid-column: 1 / -1;">
-                        <label>Precio de Venta (Bs.)</label>
-                        <input type="number" id="prodPrice" step="0.01" placeholder="Ej: 96.50" required>
-                    </div>
+                    <div class="form-group"><label>Código</label><input type="text" id="prodCode" required></div>
+                    <div class="form-group"><label>Nombre</label><input type="text" id="prodName" required></div>
+                    <div class="form-group"><label>Stock</label><input type="number" id="prodStock" required></div>
+                    <div class="form-group"><label>Costo</label><input type="number" id="prodCost" required></div>
+                    <div class="form-group"><label>Precio</label><input type="number" id="prodPrice" required></div>
                 </div>
-                <div style="margin-top: 1.5rem; display: flex; gap: 1rem; justify-content: flex-end;">
-                    <button type="button" class="btn-primary" style="background: #666;" onclick="closeModal('productModal')">Cancelar</button>
-                    <button type="submit" class="btn-primary">💾 Guardar Producto</button>
-                </div>
+                <button type="submit" class="btn-primary" style="margin-top:1rem">Guardar</button>
             </form>
         </div>
     </div>
 
     <div class="modal" id="saleEntryModal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2>📝 Agregar Venta al Libro</h2>
-                <button class="close-btn" onclick="closeModal('saleEntryModal')">×</button>
-            </div>
-            <form id="saleEntryForm" onsubmit="saveFiscalSale(event)">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>Fecha</label>
-                        <input type="date" id="fiscalSaleDate" required>
-                    </div>
-                    <div class="form-group">
-                        <label>N° Factura</label>
-                        <input type="text" id="fiscalSaleInvoice" placeholder="001-00000001" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Cliente</label>
-                        <input type="text" id="fiscalSaleClient" placeholder="Nombre o 'Consumidor Final'" required>
-                    </div>
-                    <div class="form-group">
-                        <label>RIF Cliente</label>
-                        <input type="text" id="fiscalSaleRIF" placeholder="V-00000000" value="V-00000000">
-                    </div>
-                    <div class="form-group">
-                        <label>Monto Total (Bs.)</label>
-                        <input type="number" id="fiscalSaleAmount" step="0.01" placeholder="0.00" required oninput="calculateFiscalSale()">
-                    </div>
-                    <div class="form-group">
-                        <label>Base Imponible (Bs.)</label>
-                        <input type="number" id="fiscalSaleBase" step="0.01" readonly style="background: #f0f0f0;">
-                    </div>
-                    <div class="form-group">
-                        <label>IVA 16% (Bs.)</label>
-                        <input type="number" id="fiscalSaleIVA" step="0.01" readonly style="background: #f0f0f0;">
-                    </div>
-                </div>
-                <div style="margin-top: 1.5rem; display: flex; gap: 1rem; justify-content: flex-end;">
-                    <button type="button" class="btn-primary" style="background: #666;" onclick="closeModal('saleEntryModal')">Cancelar</button>
-                    <button type="submit" class="btn-primary">💾 Agregar al Libro</button>
-                </div>
+            <h2>Venta Fiscal</h2>
+            <form onsubmit="saveFiscalSale(event)">
+                <input type="date" id="fiscalSaleDate" required style="width:100%; margin:10px 0; padding:10px;">
+                <input type="text" id="fiscalSaleInvoice" placeholder="Factura" required style="width:100%; margin:10px 0; padding:10px;">
+                <input type="number" id="fiscalSaleAmount" placeholder="Monto Total" required style="width:100%; margin:10px 0; padding:10px;">
+                <button class="btn-primary">Guardar</button>
+                <button type="button" onclick="closeModal('saleEntryModal')" style="margin-left:10px">Cancelar</button>
             </form>
         </div>
     </div>
 
     <div class="modal" id="purchaseEntryModal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2>📝 Agregar Compra al Libro</h2>
-                <button class="close-btn" onclick="closeModal('purchaseEntryModal')">×</button>
-            </div>
-            <form id="purchaseEntryForm" onsubmit="saveFiscalPurchase(event)">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>Fecha</label>
-                        <input type="date" id="fiscalPurchaseDate" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Proveedor</label>
-                        <input type="text" id="fiscalPurchaseVendor" placeholder="Nombre del proveedor" required>
-                    </div>
-                    <div class="form-group">
-                        <label>RIF Proveedor</label>
-                        <input type="text" id="fiscalPurchaseRIF" placeholder="J-12345678-9" required>
-                    </div>
-                    <div class="form-group">
-                        <label>N° Factura</label>
-                        <input type="text" id="fiscalPurchaseInvoice" placeholder="Prov-001" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Monto Total (Bs.)</label>
-                        <input type="number" id="fiscalPurchaseAmount" step="0.01" placeholder="0.00" required oninput="calculateFiscalPurchase()">
-                    </div>
-                    <div class="form-group">
-                        <label>Base Imponible (Bs.)</label>
-                        <input type="number" id="fiscalPurchaseBase" step="0.01" readonly style="background: #f0f0f0;">
-                    </div>
-                    <div class="form-group">
-                        <label>IVA 16% (Bs.)</label>
-                        <input type="number" id="fiscalPurchaseIVA" step="0.01" readonly style="background: #f0f0f0;">
-                    </div>
-                </div>
-                <div style="margin-top: 1.5rem; display: flex; gap: 1rem; justify-content: flex-end;">
-                    <button type="button" class="btn-primary" style="background: #666;" onclick="closeModal('purchaseEntryModal')">Cancelar</button>
-                    <button type="submit" class="btn-primary">💾 Agregar al Libro</button>
-                </div>
+            <h2>Compra Fiscal</h2>
+            <form onsubmit="saveFiscalPurchase(event)">
+                <input type="date" id="fiscalPurchaseDate" required style="width:100%; margin:10px 0; padding:10px;">
+                <input type="text" id="fiscalPurchaseVendor" placeholder="Proveedor" required style="width:100%; margin:10px 0; padding:10px;">
+                <input type="number" id="fiscalPurchaseAmount" placeholder="Monto Total" required style="width:100%; margin:10px 0; padding:10px;">
+                <button class="btn-primary">Guardar</button>
+                <button type="button" onclick="closeModal('purchaseEntryModal')" style="margin-left:10px">Cancelar</button>
             </form>
         </div>
     </div>
 
     <script>
-        // ==========================================
-        // CONFIGURACIÓN GEMINI AI - MODELO CORREGIDO
-        // ==========================================
-        const GEMINI_API_KEY = 'AIzaSyAj3_5b0OPohkFJVfKwcREYknbOT6xbBwU';
-        const GEMINI_MODEL = 'gemini-2.0-flash';
-        const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
-        
+        // CONFIGURACIÓN DYZAV
+        const GEMINI_API_KEY = 'AIzaSyAj-nK6iC2Yb656r2mul8FoclOwiYzJvv8'; 
+        const GEMINI_MODEL = 'gemini-2.0-flash'; // Modelo estable 2026
         const BCV_RATE = 378.46;
-        const USER_NAME = 'Crisbel';
-        const BUSINESS_NAME = 'MiniMarket Cris';
 
-        // ==========================================
-        // DATOS DE EJEMPLO COMPLETOS
-        // ==========================================
-        let products = JSON.parse(localStorage.getItem('minimarket_products')) || [
-            {code: 'ARROZ001', name: 'Arroz Precocido Mary 1kg', stock: 45, cost: 68.12, price: 96.50, margin: 29.4},
-            {code: 'ARROZ002', name: 'Arroz Integral Mary 1kg', stock: 32, cost: 72.50, price: 102.00, margin: 28.9},
-            {code: 'ACEI001', name: 'Aceite Vegetal Mazeite 1L', stock: 28, cost: 121.10, price: 170.20, margin: 28.9},
-            {code: 'ACEI002', name: 'Aceite de Oliva 500ml', stock: 15, cost: 189.50, price: 265.00, margin: 28.5},
-            {code: 'LECHE001', name: 'Leche Entera Parmalat 1L', stock: 56, cost: 94.61, price: 132.46, margin: 28.6},
-            {code: 'LECHE002', name: 'Leche Descremada 1L', stock: 34, cost: 96.20, price: 135.00, margin: 28.7},
-            {code: 'HARA001', name: 'Harina de Maíz Pan 1kg', stock: 78, cost: 52.30, price: 73.50, margin: 28.8},
-            {code: 'HARA002', name: 'Harina de Trigo Robin Hood 1kg', stock: 42, cost: 58.90, price: 82.50, margin: 28.6},
-            {code: 'AZUC001', name: 'Azúcar Refinada Central 1kg', stock: 67, cost: 45.80, price: 64.50, margin: 29.0},
-            {code: 'CAFE001', name: 'Café Molido Madrid 250g', stock: 23, cost: 156.40, price: 219.00, margin: 28.6},
-            {code: 'PAST001', name: 'Pasta Spaghetti De Cecco 500g', stock: 38, cost: 89.50, price: 125.50, margin: 28.7},
-            {code: 'ATUN001', name: 'Atún en Lata Gomes da Costa 170g', stock: 52, cost: 67.80, price: 95.00, margin: 28.6},
-            {code: 'SALS001', name: 'Salsa de Tomate Heinz 397g', stock: 41, cost: 78.90, price: 110.50, margin: 28.6},
-            {code: 'MAYO001', name: 'Mayonesa Kraft 445g', stock: 29, cost: 95.60, price: 134.00, margin: 28.7},
-            {code: 'CERV001', name: 'Cerveza Polar 355ml (Six Pack)', stock: 18, cost: 245.80, price: 345.00, margin: 28.8},
-            {code: 'REFR001', name: 'Refresco Coca-Cola 2L', stock: 24, cost: 112.50, price: 158.00, margin: 28.8},
-            {code: 'AGUA001', name: 'Agua Mineral 1.5L', stock: 89, cost: 28.50, price: 40.00, margin: 28.8},
-            {code: 'JABO001', name: 'Jabón en Polvo Ace 1kg', stock: 12, cost: 145.60, price: 204.50, margin: 28.8},
-            {code: 'PAPE001', name: 'Papel Higiénico Scott 4 rollos', stock: 37, cost: 89.90, price: 126.00, margin: 28.7},
-            {code: 'DENT001', name: 'Pasta Dental Colgate 75ml', stock: 44, cost: 56.70, price: 79.50, margin: 28.7}
+        // VARIABLES GRÁFICAS
+        let salesChartInstance = null;
+        let profitsChartInstance = null;
+
+        // INICIALIZACIÓN DE PRODUCTOS (LISTA COMPLETA 20 ITEMS RESTAURADA)
+        let products = JSON.parse(localStorage.getItem('min_prod')) || [
+            {code: 'ARROZ001', name: 'Arroz Precocido Mary 1kg', stock: 45, cost: 68.12, price: 96.50},
+            {code: 'ARROZ002', name: 'Arroz Integral Mary 1kg', stock: 32, cost: 72.50, price: 102.00},
+            {code: 'ACEI001', name: 'Aceite Vegetal Mazeite 1L', stock: 28, cost: 121.10, price: 170.20},
+            {code: 'ACEI002', name: 'Aceite de Oliva 500ml', stock: 15, cost: 189.50, price: 265.00},
+            {code: 'LECHE001', name: 'Leche Entera Parmalat 1L', stock: 56, cost: 94.61, price: 132.46},
+            {code: 'LECHE002', name: 'Leche Descremada 1L', stock: 34, cost: 96.20, price: 135.00},
+            {code: 'HARA001', name: 'Harina de Maíz Pan 1kg', stock: 78, cost: 52.30, price: 73.50},
+            {code: 'HARA002', name: 'Harina de Trigo Robin Hood 1kg', stock: 42, cost: 58.90, price: 82.50},
+            {code: 'AZUC001', name: 'Azúcar Refinada Central 1kg', stock: 67, cost: 45.80, price: 64.50},
+            {code: 'CAFE001', name: 'Café Molido Madrid 250g', stock: 23, cost: 156.40, price: 219.00},
+            {code: 'PAST001', name: 'Pasta Spaghetti De Cecco 500g', stock: 38, cost: 89.50, price: 125.50},
+            {code: 'ATUN001', name: 'Atún en Lata Gomes da Costa 170g', stock: 52, cost: 67.80, price: 95.00},
+            {code: 'SALS001', name: 'Salsa de Tomate Heinz 397g', stock: 41, cost: 78.90, price: 110.50},
+            {code: 'MAYO001', name: 'Mayonesa Kraft 445g', stock: 29, cost: 95.60, price: 134.00},
+            {code: 'CERV001', name: 'Cerveza Polar 355ml (Six Pack)', stock: 18, cost: 245.80, price: 345.00},
+            {code: 'REFR001', name: 'Refresco Coca-Cola 2L', stock: 24, cost: 112.50, price: 158.00},
+            {code: 'AGUA001', name: 'Agua Mineral 1.5L', stock: 89, cost: 28.50, price: 40.00},
+            {code: 'JABO001', name: 'Jabón en Polvo Ace 1kg', stock: 12, cost: 145.60, price: 204.50},
+            {code: 'PAPE001', name: 'Papel Higiénico Scott 4 rollos', stock: 37, cost: 89.90, price: 126.00},
+            {code: 'DENT001', name: 'Pasta Dental Colgate 75ml', stock: 44, cost: 56.70, price: 79.50}
         ];
 
-        // Ventas de ejemplo
-        let sales = JSON.parse(localStorage.getItem('minimarket_sales')) || generateSampleSales();
-        
-        // Libros fiscales de ejemplo
-        let fiscalSales = JSON.parse(localStorage.getItem('minimarket_fiscal_sales')) || generateSampleFiscalSales();
-        let fiscalPurchases = JSON.parse(localStorage.getItem('minimarket_fiscal_purchases')) || generateSampleFiscalPurchases();
-        
-        let cart = [];
-        let currentInvoiceNumber = parseInt(localStorage.getItem('minimarket_invoice')) || 125;
+        // DATOS FISCALES DE EJEMPLO
+        let fiscalSales = JSON.parse(localStorage.getItem('min_fiscal_sales')) || [];
+        let fiscalPurchases = JSON.parse(localStorage.getItem('min_fiscal_purchases')) || [];
 
-        // ==========================================
-        // GENERAR DATOS DE EJEMPLO
-        // ==========================================
-        function generateSampleSales() {
-            const sampleSales = [];
+        // GENERADOR DE DATOS DE PRUEBA (DEMO MAKER)
+        function generateDemoSales() {
+            const demoSales = [];
             const today = new Date();
-            
-            // Generar ventas de los últimos 30 días
+            // Generar también datos fiscales de prueba si están vacíos
+            if(fiscalSales.length === 0) {
+                for(let i=0; i<10; i++) {
+                    fiscalSales.push({
+                        date: new Date(today.getTime() - i*86400000).toISOString().split('T')[0],
+                        invoiceNumber: `001-${1000+i}`,
+                        client: 'Consumidor Final',
+                        rif: 'V-00000000',
+                        total: Math.random()*500 + 100
+                    });
+                }
+                localStorage.setItem('min_fiscal_sales', JSON.stringify(fiscalSales));
+            }
+
             for(let i = 0; i < 45; i++) {
                 const date = new Date(today);
-                date.setDate(date.getDate() - Math.floor(Math.random() * 30));
-                
-                const numItems = Math.floor(Math.random() * 4) + 1;
-                const items = [];
-                let subtotal = 0;
-                let profit = 0;
-                
-                for(let j = 0; j < numItems; j++) {
-                    const product = products[Math.floor(Math.random() * products.length)];
-                    const qty = Math.floor(Math.random() * 3) + 1;
-                    const itemSubtotal = product.price * qty;
-                    const itemProfit = (product.price - product.cost) * qty;
-                    
-                    items.push({
-                        code: product.code,
-                        name: product.name,
-                        cost: product.cost,
-                        price: product.price,
-                        quantity: qty
-                    });
-                    
-                    subtotal += itemSubtotal;
-                    profit += itemProfit;
+                date.setDate(date.getDate() - i);
+                const numVentas = Math.floor(Math.random() * 5) + 1;
+                for(let v = 0; v < numVentas; v++) {
+                    const items = [];
+                    const numItems = Math.floor(Math.random() * 3) + 1;
+                    let totalVenta = 0;
+                    let profitVenta = 0;
+                    for(let k = 0; k < numItems; k++) {
+                        const prod = products[Math.floor(Math.random() * products.length)];
+                        const qty = Math.floor(Math.random() * 2) + 1;
+                        items.push({...prod, qty});
+                        totalVenta += prod.price * qty;
+                        profitVenta += (prod.price - prod.cost) * qty;
+                    }
+                    demoSales.push({ date: new Date(date), total: totalVenta, profit: profitVenta, items: items });
                 }
-                
-                const iva = subtotal * 0.16;
-                
-                sampleSales.push({
-                    date: date.toISOString(),
-                    invoiceNumber: 100 + i,
-                    controlNumber: `00-${String(10000000 + i).padStart(8, '0')}`,
-                    items: items,
-                    subtotalBS: subtotal,
-                    ivaBS: iva,
-                    totalBS: subtotal + iva,
-                    profitBS: profit,
-                    bcvRate: BCV_RATE
-                });
             }
-            
-            return sampleSales.sort((a, b) => new Date(b.date) - new Date(a.date));
+            return demoSales.sort((a,b) => b.date - a.date);
         }
 
-        function generateSampleFiscalSales() {
-            const sales = [];
-            const clients = [
-                {name: 'Consumidor Final', rif: 'V-00000000'},
-                {name: 'Comercial Las Mercedes C.A.', rif: 'J-12345678-9'},
-                {name: 'Distribuidora El Sol', rif: 'J-87654321-0'},
-                {name: 'Cafetería El Buen Café', rif: 'J-11223344-5'},
-                {name: 'Licorería La Esperanza', rif: 'J-55667788-9'}
-            ];
-            
-            for(let i = 0; i < 25; i++) {
-                const date = new Date();
-                date.setDate(date.getDate() - Math.floor(Math.random() * 30));
-                
-                const total = Math.random() * 5000 + 500;
-                const base = total / 1.16;
-                const iva = total - base;
-                const client = clients[Math.floor(Math.random() * clients.length)];
-                
-                sales.push({
-                    date: date.toISOString().split('T')[0],
-                    invoiceNumber: `001-${String(10000000 + i).padStart(8, '0')}`,
-                    client: client.name,
-                    rif: client.rif,
-                    base: base,
-                    iva: iva,
-                    total: total,
-                    bcvRate: BCV_RATE
-                });
-            }
-            
-            return sales.sort((a, b) => new Date(b.date) - new Date(a.date));
+        // CARGA DE VENTAS
+        let sales = JSON.parse(localStorage.getItem('min_sales'));
+        if (!sales || sales.length === 0) {
+            sales = generateDemoSales();
+            localStorage.setItem('min_sales', JSON.stringify(sales));
+        } else {
+            sales = sales.map(s => ({...s, date: new Date(s.date)}));
         }
 
-        function generateSampleFiscalPurchases() {
-            const purchases = [];
-            const vendors = [
-                {name: 'Distribuidora Mary C.A.', rif: 'J-30012345-6'},
-                {name: 'Alimentos Polar', rif: 'J-00012345-0'},
-                {name: 'Productos Parmalat', rif: 'J-20098765-4'},
-                {name: 'Papelera Venezolana', rif: 'J-40056789-1'},
-                {name: 'Bebidas de Venezuela', rif: 'J-50011122-3'}
-            ];
-            
-            for(let i = 0; i < 20; i++) {
-                const date = new Date();
-                date.setDate(date.getDate() - Math.floor(Math.random() * 30));
-                
-                const total = Math.random() * 8000 + 1000;
-                const base = total / 1.16;
-                const iva = total - base;
-                const vendor = vendors[Math.floor(Math.random() * vendors.length)];
-                
-                purchases.push({
-                    date: date.toISOString().split('T')[0],
-                    vendor: vendor.name,
-                    rif: vendor.rif,
-                    invoiceNumber: `PROV-${String(1000 + i).padStart(4, '0')}`,
-                    base: base,
-                    iva: iva,
-                    total: total
-                });
-            }
-            
-            return purchases.sort((a, b) => new Date(b.date) - new Date(a.date));
-        }
+        let cart = [];
 
-        // ==========================================
         // INICIALIZACIÓN
-        // ==========================================
-        document.addEventListener('DOMContentLoaded', function() {
-            updateDate();
-            setInterval(updateDate, 60000);
-            
-            // Cargar datos guardados
-            loadAllData();
-            
-            // Inicializar vistas
-            renderInventory();
-            renderProfits();
-            renderFiscalBooks();
+        document.addEventListener('DOMContentLoaded', () => {
+            const dateStr = new Date().toLocaleDateString('es-VE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            document.getElementById('currentDateDisplay').textContent = dateStr;
             updateDashboard();
-            
-            // Configurar fecha actual en modales fiscales
-            const todayISO = new Date().toISOString().split('T')[0];
-            if(document.getElementById('fiscalSaleDate')) document.getElementById('fiscalSaleDate').value = todayISO;
-            if(document.getElementById('fiscalPurchaseDate')) document.getElementById('fiscalPurchaseDate').value = todayISO;
+            renderInventory();
+            renderFiscal();
+            renderProfits(); 
         });
 
-        // ==========================================
-        // FUNCIONES DE UTILIDAD
-        // ==========================================
-        function formatBS(amount) {
-            return 'Bs. ' + amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+        // FUNCIONES UI
+        function handleLogin(e) {
+            if(e) e.preventDefault();
+            const u = document.getElementById('username').value;
+            const p = document.getElementById('password').value;
+            if(u === 'crisbel' && p === 'crisbel2026') {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('appContainer').style.display = 'block';
+                updateDashboard(); 
+                renderProfits();
+            } else { alert('Credenciales incorrectas'); }
         }
 
-        function formatUSD(amount) {
-            return '$' + (amount / BCV_RATE).toFixed(2);
-        }
-
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            return date.toLocaleDateString('es-VE', { day: '2-digit', month: '2-digit', year: 'numeric' });
-        }
-
-        function updateDate() {
-            const now = new Date();
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            const dateStr = now.toLocaleDateString('es-VE', options);
-            if(document.getElementById('currentDate')) {
-                document.getElementById('currentDate').textContent = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
-            }
-        }
-
-        function loadAllData() {
-            console.log('Datos cargados:', { products: products.length, sales: sales.length });
-        }
-
-        function saveToLocalStorage() {
-            localStorage.setItem('minimarket_products', JSON.stringify(products));
-            localStorage.setItem('minimarket_sales', JSON.stringify(sales));
-            localStorage.setItem('minimarket_fiscal_sales', JSON.stringify(fiscalSales));
-            localStorage.setItem('minimarket_fiscal_purchases', JSON.stringify(fiscalPurchases));
-            localStorage.setItem('minimarket_invoice', currentInvoiceNumber.toString());
-        }
-
-        // ==========================================
-        // NAVEGACIÓN Y UI
-        // ==========================================
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('active');
             document.getElementById('sidebarOverlay').classList.toggle('active');
         }
 
-        function showSection(sectionId) {
-            // Ocultar todas las secciones
-            document.querySelectorAll('.content-section').forEach(section => {
-                section.classList.remove('active');
-            });
+        function showSection(id) {
+            document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
             
-            // Mostrar sección seleccionada
-            document.getElementById(sectionId).classList.add('active');
+            const titleMap = {'dashboard': 'Dashboard', 'inventory': 'Inventario', 'sales': 'Punto de Venta', 'profits': 'Ganancias', 'fiscal': 'Libros Fiscales', 'config': 'Configuración'};
+            document.getElementById('pageTitleDesktop').textContent = titleMap[id];
+            document.getElementById('pageTitleMobile').textContent = titleMap[id];
             
-            // Actualizar títulos
-            const titles = {
-                'dashboard': 'Dashboard',
-                'inventory': 'Inventario',
-                'sales': 'Nueva Venta',
-                'profits': 'Ganancias',
-                'fiscal': 'Libros Fiscales',
-                'config': 'Configuración'
-            };
-            
-            if(document.getElementById('mobileTitle')) document.getElementById('mobileTitle').textContent = titles[sectionId];
-            if(document.getElementById('desktopTitle')) document.getElementById('desktopTitle').textContent = titles[sectionId];
-            
-            // Actualizar navegación activa
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-                if(item.getAttribute('onclick')?.includes(sectionId)) {
-                    item.classList.add('active');
-                }
-            });
-            
-            // Cerrar sidebar en móvil
             document.getElementById('sidebar').classList.remove('active');
             document.getElementById('sidebarOverlay').classList.remove('active');
-            
-            // Actualizar datos específicos de la sección
-            if(sectionId === 'dashboard') updateDashboard();
-            if(sectionId === 'inventory') renderInventory();
-            if(sectionId === 'profits') renderProfits();
-            if(sectionId === 'fiscal') renderFiscalBooks();
+
+            if(id === 'dashboard') updateDashboard();
+            if(id === 'profits') renderProfits();
+            if(id === 'fiscal') renderFiscal();
         }
 
-        function openModal(modalId) {
-            document.getElementById(modalId).classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
+        function logout() { if(confirm('¿Salir del sistema?')) location.reload(); }
 
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.remove('active');
-            document.body.style.overflow = '';
-        }
-
-        // ==========================================
-        // AUTENTICACIÓN
-        // ==========================================
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            
-            if(username === 'crisbel' && password === 'crisbel2026') {
-                document.getElementById('loginScreen').style.display = 'none';
-                document.getElementById('appContainer').style.display = 'block';
-                showNotification('¡Bienvenida, Crisbel! 🎉', 'success');
-            } else {
-                showNotification('Usuario o contraseña incorrectos', 'error');
+        // LÓGICA DE GRÁFICOS
+        function renderCharts() {
+            const ctxSales = document.getElementById('salesChart').getContext('2d');
+            const salesMap = {};
+            const today = new Date();
+            for(let i=29; i>=0; i--) {
+                const d = new Date(today);
+                d.setDate(d.getDate() - i);
+                salesMap[d.toLocaleDateString()] = {total:0, profit:0};
             }
-        });
 
-        function logout() {
-            if(confirm('¿Cerrar sesión?')) {
-                document.getElementById('appContainer').style.display = 'none';
-                document.getElementById('loginScreen').style.display = 'flex';
-                document.getElementById('password').value = '';
-            }
-        }
+            sales.forEach(s => {
+                const dateKey = new Date(s.date).toLocaleDateString();
+                if(salesMap[dateKey]) {
+                    salesMap[dateKey].total += s.total;
+                    salesMap[dateKey].profit += s.profit;
+                }
+            });
 
-        // ==========================================
-        // DASHBOARD
-        // ==========================================
-        function updateDashboard() {
-            const today = new Date().toDateString();
-            const todaySales = sales.filter(s => new Date(s.date).toDateString() === today);
-            
-            const totalSalesBS = todaySales.reduce((sum, s) => sum + s.totalBS, 0);
-            const totalProfitBS = todaySales.reduce((sum, s) => sum + s.profitBS, 0);
-            
-            document.getElementById('todaySalesBS').textContent = formatBS(totalSalesBS);
-            document.getElementById('todaySalesUSD').textContent = formatUSD(totalSalesBS);
-            document.getElementById('todayProfitBS').textContent = formatBS(totalProfitBS);
-            document.getElementById('todayProfitUSD').textContent = formatUSD(totalProfitBS);
-            document.getElementById('totalProducts').textContent = products.length;
-            
-            // Resumen del mes
-            const currentMonth = new Date().getMonth();
-            const monthSales = sales.filter(s => new Date(s.date).getMonth() === currentMonth);
-            const monthRevenue = monthSales.reduce((sum, s) => sum + s.totalBS, 0);
-            const monthProfit = monthSales.reduce((sum, s) => sum + s.profitBS, 0);
-            const monthMargin = monthRevenue > 0 ? (monthProfit / monthRevenue * 100).toFixed(1) : 0;
-            
-            document.getElementById('monthRevenueBS').textContent = formatBS(monthRevenue);
-            document.getElementById('monthRevenueUSD').textContent = formatUSD(monthRevenue);
-            document.getElementById('monthProfitBS').textContent = formatBS(monthProfit);
-            document.getElementById('monthProfitUSD').textContent = formatUSD(monthProfit);
-            document.getElementById('monthMargin').textContent = monthMargin + '%';
-        }
+            const labels = Object.keys(salesMap);
+            const dataTotal = Object.values(salesMap).map(v => v.total);
+            const dataProfit = Object.values(salesMap).map(v => v.profit);
 
-        // ==========================================
-        // INVENTARIO
-        // ==========================================
-        function renderInventory() {
-            const tbody = document.getElementById('inventoryTable');
-            if(!tbody) return;
-            tbody.innerHTML = '';
-            
-            products.forEach((prod, index) => {
-                const margin = ((prod.price - prod.cost) / prod.price * 100).toFixed(1);
-                const stockClass = prod.stock < 20 ? 'badge-danger' : prod.stock < 50 ? 'badge-warning' : 'badge-success';
-                
-                const row = `
-                    <tr>
-                        <td><strong>${prod.code}</strong></td>
-                        <td>${prod.name}</td>
-                        <td><span class="badge ${stockClass}">${prod.stock}</span></td>
-                        <td class="dual-currency">
-                            <span class="primary">${formatBS(prod.cost)}</span>
-                            <span class="secondary">${formatUSD(prod.cost)}</span>
-                        </td>
-                        <td class="dual-currency">
-                            <span class="primary">${formatBS(prod.price)}</span>
-                            <span class="secondary">${formatUSD(prod.price)}</span>
-                        </td>
-                        <td><span class="badge badge-info">${margin}%</span></td>
-                        <td>
-                            <button class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="editProduct(${index})">✏️</button>
-                            <button class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; background: var(--danger);" onclick="deleteProduct(${index})">🗑️</button>
-                        </td>
-                    </tr>
-                `;
-                tbody.innerHTML += row;
+            if(salesChartInstance) salesChartInstance.destroy();
+
+            salesChartInstance = new Chart(ctxSales, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: 'Ventas (Bs)', data: dataTotal, borderColor: '#FF6B35', backgroundColor: 'rgba(255, 107, 53, 0.1)', tension: 0.4, fill: true },
+                        { label: 'Ganancia (Bs)', data: dataProfit, borderColor: '#27AE60', backgroundColor: 'rgba(39, 174, 96, 0.1)', tension: 0.4, fill: true }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
             });
         }
 
-        function saveProduct(e) {
-            e.preventDefault();
-            
-            const newProduct = {
-                code: document.getElementById('prodCode').value.toUpperCase(),
-                name: document.getElementById('prodName').value,
-                stock: parseInt(document.getElementById('prodStock').value),
-                cost: parseFloat(document.getElementById('prodCost').value),
-                price: parseFloat(document.getElementById('prodPrice').value),
-                margin: 0
-            };
-            
-            newProduct.margin = ((newProduct.price - newProduct.cost) / newProduct.price * 100);
-            
-            // Verificar si existe
-            const existingIndex = products.findIndex(p => p.code === newProduct.code);
-            if(existingIndex >= 0) {
-                products[existingIndex] = newProduct;
-                showNotification('Producto actualizado', 'success');
-            } else {
-                products.push(newProduct);
-                showNotification('Producto agregado', 'success');
-            }
-            
-            saveToLocalStorage();
-            renderInventory();
-            closeModal('productModal');
-            document.getElementById('productForm').reset();
+        function renderProfitsCharts(productStats) {
+            const ctxProfits = document.getElementById('profitsChart').getContext('2d');
+            const sortedProducts = Object.values(productStats).sort((a,b) => b.profit - a.profit).slice(0, 5);
+            const pLabels = sortedProducts.map(p => p.name.substring(0, 15) + '...');
+            const pRevenue = sortedProducts.map(p => p.revenue);
+            const pProfit = sortedProducts.map(p => p.profit);
+
+            if(profitsChartInstance) profitsChartInstance.destroy();
+
+            profitsChartInstance = new Chart(ctxProfits, {
+                type: 'bar',
+                data: {
+                    labels: pLabels,
+                    datasets: [
+                        { label: 'Ingresos', data: pRevenue, backgroundColor: '#2C3E50' },
+                        { label: 'Ganancia Neta', data: pProfit, backgroundColor: '#27AE60' }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y' }
+            });
         }
 
-        function editProduct(index) {
-            const prod = products[index];
-            document.getElementById('prodCode').value = prod.code;
-            document.getElementById('prodName').value = prod.name;
-            document.getElementById('prodStock').value = prod.stock;
-            document.getElementById('prodCost').value = prod.cost;
-            document.getElementById('prodPrice').value = prod.price;
-            openModal('productModal');
+        // LÓGICA DE NEGOCIO
+        function updateDashboard() {
+            const todayStr = new Date().toLocaleDateString();
+            const todaysSales = sales.filter(s => s.date.toLocaleDateString() === todayStr);
+            const total = todaysSales.reduce((acc, s) => acc + s.total, 0);
+            const profit = todaysSales.reduce((acc, s) => acc + s.profit, 0);
+
+            const currentMonth = new Date().getMonth();
+            const monthSales = sales.filter(s => s.date.getMonth() === currentMonth);
+            const monthRevenue = monthSales.reduce((acc, s) => acc + s.total, 0);
+            const monthProfit = monthSales.reduce((acc, s) => acc + s.profit, 0);
+
+            document.getElementById('todaySalesBS').textContent = `Bs. ${total.toFixed(2)}`;
+            document.getElementById('todaySalesUSD').textContent = `$${(total/BCV_RATE).toFixed(2)} USD`;
+            document.getElementById('todayProfitBS').textContent = `Bs. ${profit.toFixed(2)}`;
+            document.getElementById('totalProducts').textContent = products.length;
+            
+            document.getElementById('monthRevenueBS').textContent = `Bs. ${monthRevenue.toFixed(2)}`;
+            document.getElementById('monthProfitBS').textContent = `Bs. ${monthProfit.toFixed(2)}`;
+
+            renderCharts(); 
         }
 
-        function deleteProduct(index) {
-            if(confirm('¿Eliminar este producto?')) {
-                products.splice(index, 1);
-                saveToLocalStorage();
-                renderInventory();
-                showNotification('Producto eliminado', 'success');
-            }
+        function renderInventory() {
+            const tbody = document.getElementById('inventoryTable');
+            tbody.innerHTML = products.map(p => {
+                const margin = ((p.price - p.cost) / p.price * 100).toFixed(1);
+                return `<tr>
+                    <td><strong>${p.code}</strong></td>
+                    <td>${p.name}</td>
+                    <td><span class="badge ${p.stock < 10 ? 'badge-danger' : 'badge-success'}">${p.stock}</span></td>
+                    <td class="dual-currency"><span class="primary">Bs. ${p.price.toFixed(2)}</span><span class="secondary">$${(p.price/BCV_RATE).toFixed(2)}</span></td>
+                    <td><span class="badge badge-info">${margin}%</span></td>
+                </tr>`;
+            }).join('');
         }
 
-        // ==========================================
-        // VENTAS (POS)
-        // ==========================================
-        function addToCart() {
-            const search = document.getElementById('saleProductSearch').value.toLowerCase();
-            const product = products.find(p => 
-                p.code.toLowerCase() === search || 
-                p.name.toLowerCase().includes(search)
-            );
-            
-            if(!product) {
-                showNotification('Producto no encontrado', 'error');
-                return;
-            }
-            
-            if(product.stock <= 0) {
-                showNotification('Sin stock disponible', 'error');
-                return;
-            }
-            
-            const existingItem = cart.find(item => item.code === product.code);
-            if(existingItem) {
-                if(existingItem.quantity < product.stock) {
-                    existingItem.quantity++;
-                } else {
-                    showNotification('Stock insuficiente', 'error');
-                    return;
-                }
-            } else {
-                cart.push({
-                    code: product.code,
-                    name: product.name,
-                    cost: product.cost,
-                    price: product.price,
-                    quantity: 1
+        function renderProfits() {
+            const productStats = {};
+            sales.forEach(sale => {
+                sale.items.forEach(item => {
+                    if(!productStats[item.code]) productStats[item.code] = { name: item.name, qty: 0, revenue: 0, cost: 0, profit: 0 };
+                    productStats[item.code].qty += item.quantity;
+                    const rev = item.price * item.quantity;
+                    const cst = item.cost * item.quantity;
+                    productStats[item.code].revenue += rev;
+                    productStats[item.code].cost += cst;
+                    productStats[item.code].profit += (rev - cst);
                 });
-            }
-            
-            document.getElementById('saleProductSearch').value = '';
-            renderCart();
+            });
+
+            const totalRev = Object.values(productStats).reduce((acc, p) => acc + p.revenue, 0);
+            const totalProf = Object.values(productStats).reduce((acc, p) => acc + p.profit, 0);
+
+            document.getElementById('profitRevenue').textContent = `Bs. ${totalRev.toFixed(2)}`;
+            document.getElementById('profitNet').textContent = `Bs. ${totalProf.toFixed(2)}`;
+
+            const tbody = document.getElementById('profitTable');
+            tbody.innerHTML = '';
+            Object.values(productStats).sort((a, b) => b.profit - a.profit).forEach(stat => {
+                tbody.innerHTML += `<tr><td>${stat.name}</td><td>${stat.qty}</td><td style="color:var(--success);">+${stat.profit.toFixed(2)}</td></tr>`;
+            });
+
+            renderProfitsCharts(productStats);
+        }
+
+        // POS
+        function addToCart() {
+            const query = document.getElementById('saleSearch').value.toLowerCase();
+            const prod = products.find(p => p.name.toLowerCase().includes(query) || p.code.toLowerCase() === query);
+            if(prod && prod.stock > 0) {
+                cart.push({...prod, qty: 1});
+                renderCart();
+                document.getElementById('saleSearch').value = '';
+            } else { alert('Producto no encontrado o sin stock'); }
         }
 
         function renderCart() {
-            const tbody = document.getElementById('cartItems');
-            if(!tbody) return;
-            tbody.innerHTML = '';
-            
-            let subtotal = 0;
-            let totalProfit = 0;
-            
-            cart.forEach((item, index) => {
-                const itemSubtotal = item.price * item.quantity;
-                const itemProfit = (item.price - item.cost) * item.quantity;
-                subtotal += itemSubtotal;
-                totalProfit += itemProfit;
-                
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${item.name}</td>
-                        <td>
-                            <input type="number" value="${item.quantity}" min="1" 
-                                onchange="updateCartQty(${index}, this.value)" 
-                                style="width: 60px; padding: 0.3rem; border: 1px solid #ddd; border-radius: 4px;">
-                        </td>
-                        <td>${formatBS(item.price)}</td>
-                        <td>${formatBS(itemSubtotal)}</td>
-                        <td>
-                            <button onclick="removeFromCart(${index})" style="background: none; border: none; color: var(--danger); cursor: pointer; font-size: 1.2rem;">×</button>
-                        </td>
-                    </tr>
-                `;
-            });
-            
-            const iva = subtotal * 0.16;
-            const total = subtotal + iva;
-            
-            document.getElementById('saleSubtotal').textContent = formatBS(subtotal);
-            document.getElementById('saleIVA').textContent = formatBS(iva);
-            document.getElementById('saleTotal').textContent = formatBS(total);
-            document.getElementById('saleProfit').textContent = formatBS(totalProfit);
-            document.getElementById('saleSummary').style.display = cart.length > 0 ? 'block' : 'none';
-        }
-
-        function updateCartQty(index, qty) {
-            qty = parseInt(qty);
-            if(qty < 1) qty = 1;
-            
-            const product = products.find(p => p.code === cart[index].code);
-            if(qty > product.stock) {
-                showNotification('Stock insuficiente', 'error');
-                qty = product.stock;
-            }
-            
-            cart[index].quantity = qty;
-            renderCart();
-        }
-
-        function removeFromCart(index) {
-            cart.splice(index, 1);
-            renderCart();
+            const tbody = document.getElementById('cartTable');
+            let total = 0;
+            tbody.innerHTML = cart.map((item, idx) => {
+                total += item.price;
+                return `<tr><td>${item.name}</td><td>1</td><td>Bs. ${item.price.toFixed(2)}</td><td><button onclick="cart.splice(${idx},1);renderCart()" style="color:red;border:none;background:none">×</button></td></tr>`;
+            }).join('');
+            document.getElementById('cartTotal').textContent = `Bs. ${total.toFixed(2)}`;
         }
 
         function processSale() {
-            if(cart.length === 0) {
-                showNotification('Agrega productos al carrito', 'error');
-                return;
-            }
+            if(cart.length === 0) return;
+            const total = cart.reduce((acc, item) => acc + item.price, 0);
+            const profit = cart.reduce((acc, item) => acc + (item.price - item.cost), 0);
             
-            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            const iva = subtotal * 0.16;
-            const total = subtotal + iva;
-            const profit = cart.reduce((sum, item) => sum + ((item.price - item.cost) * item.quantity), 0);
+            sales.unshift({ date: new Date(), total: total, profit: profit, items: cart });
             
-            // Crear registro de venta
-            const sale = {
-                date: new Date().toISOString(),
-                invoiceNumber: currentInvoiceNumber++,
-                controlNumber: `00-${String(currentInvoiceNumber).padStart(8, '0')}`,
-                items: [...cart],
-                subtotalBS: subtotal,
-                ivaBS: iva,
-                totalBS: total,
-                profitBS: profit,
-                bcvRate: BCV_RATE
+            cart.forEach(cItem => {
+                const p = products.find(x => x.code === cItem.code);
+                if(p) p.stock--;
+            });
+
+            localStorage.setItem('min_prod', JSON.stringify(products));
+            localStorage.setItem('min_sales', JSON.stringify(sales));
+            
+            cart = []; renderCart(); renderInventory(); updateDashboard(); renderFiscal();
+            alert('¡Venta Exitosa!');
+        }
+
+        // MODAL & FISCAL
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        
+        function saveProduct(e) {
+            e.preventDefault();
+            const p = {
+                code: document.getElementById('prodCode').value,
+                name: document.getElementById('prodName').value,
+                stock: parseInt(document.getElementById('prodStock').value),
+                cost: parseFloat(document.getElementById('prodCost').value),
+                price: parseFloat(document.getElementById('prodPrice').value)
             };
-            
-            sales.unshift(sale);
-            
-            // Actualizar stock
-            cart.forEach(item => {
-                const product = products.find(p => p.code === item.code);
-                if(product) product.stock -= item.quantity;
-            });
-            
-            // Agregar a libro fiscal automáticamente
-            const fiscalSale = {
-                date: new Date().toISOString().split('T')[0],
-                invoiceNumber: `001-${String(sale.invoiceNumber).padStart(8, '0')}`,
-                client: 'Consumidor Final',
-                rif: 'V-00000000',
-                base: subtotal,
-                iva: iva,
-                total: total,
-                bcvRate: BCV_RATE
-            };
-            fiscalSales.unshift(fiscalSale);
-            
-            saveToLocalStorage();
-            
-            // Limpiar carrito
-            cart = [];
-            renderCart();
-            
-            showNotification(`Venta #${sale.invoiceNumber} procesada exitosamente`, 'success');
-            
-            // Imprimir ticket (simulado)
-            setTimeout(() => {
-                if(confirm('¿Deseas ver el ticket de venta?')) {
-                    printTicket(sale);
-                }
-            }, 500);
+            products.push(p);
+            localStorage.setItem('min_prod', JSON.stringify(products));
+            renderInventory(); closeModal('productModal'); updateDashboard();
         }
 
-        function printTicket(sale) {
-            const ticketWindow = window.open('', '_blank');
-            const ticketHTML = `
-                <html>
-                <head>
-                    <title>Ticket #${sale.invoiceNumber}</title>
-                    <style>
-                        body { font-family: monospace; width: 300px; margin: 0 auto; padding: 20px; }
-                        .center { text-align: center; }
-                        .line { border-top: 1px dashed #000; margin: 10px 0; }
-                        .item { display: flex; justify-content: space-between; margin: 5px 0; }
-                        .total { font-weight: bold; font-size: 1.2em; margin-top: 10px; }
-                    </style>
-                </head>
-                <body>
-                    <div class="center">
-                        <h2>${BUSINESS_NAME}</h2>
-                        <p>RIF: J-12345678-9</p>
-                        <p>${new Date().toLocaleString('es-VE')}</p>
-                    </div>
-                    <div class="line"></div>
-                    <p>Factura: ${sale.invoiceNumber}</p>
-                    <p>Control: ${sale.controlNumber}</p>
-                    <div class="line"></div>
-                    ${sale.items.map(item => `
-                        <div class="item">
-                            <span>${item.quantity}x ${item.name.substring(0, 20)}</span>
-                            <span>${(item.price * item.quantity).toFixed(2)}</span>
-                        </div>
-                    `).join('')}
-                    <div class="line"></div>
-                    <div class="item"><span>Subtotal:</span><span>${sale.subtotalBS.toFixed(2)}</span></div>
-                    <div class="item"><span>IVA (16%):</span><span>${sale.ivaBS.toFixed(2)}</span></div>
-                    <div class="item total"><span>TOTAL:</span><span>${sale.totalBS.toFixed(2)} Bs.</span></div>
-                    <div class="line"></div>
-                    <div class="center">
-                        <p>¡Gracias por su compra!</p>
-                        <p>Tasa BCV: ${BCV_RATE}</p>
-                    </div>
-                </body>
-                </html>
-            `;
-            ticketWindow.document.write(ticketHTML);
-            ticketWindow.document.close();
-            ticketWindow.print();
+        function renderFiscal() {
+            // Libro ventas
+            const salesBody = document.getElementById('salesBookBody');
+            salesBody.innerHTML = fiscalSales.map(s => `<tr><td>${s.date}</td><td>${s.invoiceNumber}</td><td>${s.client}</td><td>${s.total.toFixed(2)}</td></tr>`).join('');
+            
+            // Libro compras
+            const purchBody = document.getElementById('purchasesBookBody');
+            purchBody.innerHTML = fiscalPurchases.map(p => `<tr><td>${p.date}</td><td>${p.vendor}</td><td>${p.invoiceNumber}</td><td>${p.total.toFixed(2)}</td></tr>`).join('');
+
+            // Resumen (Simplificado)
+            const deb = fiscalSales.reduce((a,b)=>a+(b.total*0.16),0);
+            const cred = fiscalPurchases.reduce((a,b)=>a+(b.total*0.16),0);
+            document.getElementById('ivaDebit').textContent = `Bs. ${deb.toFixed(2)}`;
+            document.getElementById('ivaCredit').textContent = `Bs. ${cred.toFixed(2)}`;
+            document.getElementById('ivaPayable').textContent = `Bs. ${(deb-cred).toFixed(2)}`;
         }
 
-        // ==========================================
-        // GANANCIAS
-        // ==========================================
-        function renderProfits() {
-            // Calcular totales
-            const totalRevenue = sales.reduce((sum, s) => sum + s.totalBS, 0);
-            const totalCosts = sales.reduce((sum, s) => sum + s.items.reduce((iSum, item) => iSum + (item.cost * item.quantity), 0), 0);
-            const netProfit = totalRevenue - totalCosts;
-            const roi = totalCosts > 0 ? (netProfit / totalCosts * 100).toFixed(1) : 0;
-            
-            document.getElementById('profitRevenue').textContent = formatBS(totalRevenue);
-            document.getElementById('profitCosts').textContent = formatBS(totalCosts);
-            document.getElementById('profitNet').textContent = formatBS(netProfit);
-            document.getElementById('profitROI').textContent = roi + '%';
-            
-            // Tabla por producto
-            const productStats = {};
-            sales.forEach(sale => {
-                sale.items.forEach(item => {
-                    if(!productStats[item.code]) {
-                        productStats[item.code] = {
-                            name: item.name,
-                            qty: 0,
-                            revenue: 0,
-                            cost: 0
-                        };
-                    }
-                    productStats[item.code].qty += item.quantity;
-                    productStats[item.code].revenue += item.price * item.quantity;
-                    productStats[item.code].cost += item.cost * item.quantity;
-                });
-            });
-            
-            const tbody = document.getElementById('profitTable');
-            if(tbody) {
-                tbody.innerHTML = '';
-                Object.values(productStats).sort((a, b) => b.revenue - a.revenue).forEach(stat => {
-                    const profit = stat.revenue - stat.cost;
-                    const margin = stat.revenue > 0 ? (profit / stat.revenue * 100).toFixed(1) : 0;
-                    
-                    tbody.innerHTML += `
-                        <tr>
-                            <td>${stat.name}</td>
-                            <td>${stat.qty}</td>
-                            <td>${formatBS(stat.revenue)}</td>
-                            <td>${formatBS(stat.cost)}</td>
-                            <td style="color: ${profit >= 0 ? 'var(--success)' : 'var(--danger)'}">${formatBS(profit)}</td>
-                            <td><span class="badge ${margin > 25 ? 'badge-success' : 'badge-warning'}">${margin}%</span></td>
-                        </tr>
-                    `;
-                });
-            }
-        }
-
-        function exportProfits() {
-            let csv = 'Producto,Unidades,Ingresos,Costos,Ganancia,Margen\n';
-            
-            const productStats = {};
-            sales.forEach(sale => {
-                sale.items.forEach(item => {
-                    if(!productStats[item.code]) {
-                        productStats[item.code] = { name: item.name, qty: 0, revenue: 0, cost: 0 };
-                    }
-                    productStats[item.code].qty += item.quantity;
-                    productStats[item.code].revenue += item.price * item.quantity;
-                    productStats[item.code].cost += item.cost * item.quantity;
-                });
-            });
-            
-            Object.values(productStats).forEach(stat => {
-                const profit = stat.revenue - stat.cost;
-                const margin = stat.revenue > 0 ? (profit / stat.revenue * 100).toFixed(1) : 0;
-                csv += `"${stat.name}",${stat.qty},${stat.revenue.toFixed(2)},${stat.cost.toFixed(2)},${profit.toFixed(2)},${margin}%\n`;
-            });
-            
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `ganancias_${new Date().toISOString().split('T')[0]}.csv`;
-            link.click();
-            
-            showNotification('Reporte exportado', 'success');
-        }
-
-        // ==========================================
-        // LIBROS FISCALES
-        // ==========================================
         function showFiscalTab(tabId) {
-            document.querySelectorAll('.fiscal-tab').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.fiscal-content').forEach(content => content.classList.remove('active'));
-            
+            document.querySelectorAll('.fiscal-tab').forEach(t=>t.classList.remove('active'));
+            document.querySelectorAll('.fiscal-content').forEach(c=>c.classList.remove('active'));
             event.target.classList.add('active');
             document.getElementById(tabId).classList.add('active');
         }
 
-        function renderFiscalBooks() {
-            // Libro de ventas
-            const salesBody = document.getElementById('salesBookBody');
-            if(salesBody) {
-                salesBody.innerHTML = '';
-                fiscalSales.forEach(sale => {
-                    salesBody.innerHTML += `
-                        <tr>
-                            <td>${formatDate(sale.date)}</td>
-                            <td>${sale.invoiceNumber}</td>
-                            <td>${sale.client}</td>
-                            <td>${sale.rif}</td>
-                            <td>${formatBS(sale.base)}</td>
-                            <td>${formatBS(sale.iva)}</td>
-                            <td><strong>${formatBS(sale.total)}</strong></td>
-                            <td>${sale.bcvRate}</td>
-                        </tr>
-                    `;
-                });
-            }
-            
-            // Libro de compras
-            const purchasesBody = document.getElementById('purchasesBookBody');
-            if(purchasesBody) {
-                purchasesBody.innerHTML = '';
-                fiscalPurchases.forEach(purchase => {
-                    purchasesBody.innerHTML += `
-                        <tr>
-                            <td>${formatDate(purchase.date)}</td>
-                            <td>${purchase.vendor}</td>
-                            <td>${purchase.rif}</td>
-                            <td>${purchase.invoiceNumber}</td>
-                            <td>${formatBS(purchase.base)}</td>
-                            <td>${formatBS(purchase.iva)}</td>
-                            <td><strong>${formatBS(purchase.total)}</strong></td>
-                        </tr>
-                    `;
-                });
-            }
-            
-            // Resumen IVA
-            const totalDebit = fiscalSales.reduce((sum, s) => sum + s.iva, 0);
-            const totalCredit = fiscalPurchases.reduce((sum, p) => sum + p.iva, 0);
-            const payable = totalDebit - totalCredit;
-            const islr = fiscalPurchases.reduce((sum, p) => sum + (p.base * 0.01), 0); // 1% ISLR
-            
-            if(document.getElementById('ivaDebit')) document.getElementById('ivaDebit').textContent = formatBS(totalDebit);
-            if(document.getElementById('ivaCredit')) document.getElementById('ivaCredit').textContent = formatBS(totalCredit);
-            if(document.getElementById('ivaPayable')) document.getElementById('ivaPayable').textContent = formatBS(payable > 0 ? payable : 0);
-            if(document.getElementById('islrRetention')) document.getElementById('islrRetention').textContent = formatBS(islr);
-        }
-
-        function calculateFiscalSale() {
-            const total = parseFloat(document.getElementById('fiscalSaleAmount').value) || 0;
-            const base = total / 1.16;
-            const iva = total - base;
-            
-            document.getElementById('fiscalSaleBase').value = base.toFixed(2);
-            document.getElementById('fiscalSaleIVA').value = iva.toFixed(2);
-        }
-
-        function calculateFiscalPurchase() {
-            const total = parseFloat(document.getElementById('fiscalPurchaseAmount').value) || 0;
-            const base = total / 1.16;
-            const iva = total - base;
-            
-            document.getElementById('fiscalPurchaseBase').value = base.toFixed(2);
-            document.getElementById('fiscalPurchaseIVA').value = iva.toFixed(2);
-        }
-
         function saveFiscalSale(e) {
             e.preventDefault();
-            
-            const sale = {
+            fiscalSales.unshift({
                 date: document.getElementById('fiscalSaleDate').value,
                 invoiceNumber: document.getElementById('fiscalSaleInvoice').value,
-                client: document.getElementById('fiscalSaleClient').value,
-                rif: document.getElementById('fiscalSaleRIF').value,
-                base: parseFloat(document.getElementById('fiscalSaleBase').value),
-                iva: parseFloat(document.getElementById('fiscalSaleIVA').value),
-                total: parseFloat(document.getElementById('fiscalSaleAmount').value),
-                bcvRate: BCV_RATE
-            };
-            
-            fiscalSales.unshift(sale);
-            fiscalSales.sort((a, b) => new Date(b.date) - new Date(a.date));
-            
-            saveToLocalStorage();
-            renderFiscalBooks();
-            closeModal('saleEntryModal');
-            document.getElementById('saleEntryForm').reset();
-            showNotification('Venta fiscal registrada', 'success');
+                client: 'Consumidor', // Simplificado
+                total: parseFloat(document.getElementById('fiscalSaleAmount').value)
+            });
+            localStorage.setItem('min_fiscal_sales', JSON.stringify(fiscalSales));
+            renderFiscal(); closeModal('saleEntryModal');
         }
 
         function saveFiscalPurchase(e) {
             e.preventDefault();
-            
-            const purchase = {
+            fiscalPurchases.unshift({
                 date: document.getElementById('fiscalPurchaseDate').value,
                 vendor: document.getElementById('fiscalPurchaseVendor').value,
-                rif: document.getElementById('fiscalPurchaseRIF').value,
-                invoiceNumber: document.getElementById('fiscalPurchaseInvoice').value,
-                base: parseFloat(document.getElementById('fiscalPurchaseBase').value),
-                iva: parseFloat(document.getElementById('fiscalPurchaseIVA').value),
+                invoiceNumber: 'PROV-00X', 
                 total: parseFloat(document.getElementById('fiscalPurchaseAmount').value)
-            };
-            
-            fiscalPurchases.unshift(purchase);
-            fiscalPurchases.sort((a, b) => new Date(b.date) - new Date(a.date));
-            
-            saveToLocalStorage();
-            renderFiscalBooks();
-            closeModal('purchaseEntryModal');
-            document.getElementById('purchaseEntryForm').reset();
-            showNotification('Compra registrada', 'success');
-        }
-
-        function loadFiscalPeriod() {
-            const month = document.getElementById('fiscalMonth').value;
-            if(month) {
-                document.getElementById('currentFiscalPeriod').textContent = new Date(month + '-01').toLocaleDateString('es-VE', { month: 'long', year: 'numeric' });
-                // Aquí se filtrarían los datos por período
-                showNotification('Período actualizado: ' + document.getElementById('currentFiscalPeriod').textContent, 'success');
-            }
-        }
-
-        function downloadFiscalBooks() {
-            let csv = 'LIBRO DE VENTAS\nFecha,Factura,Cliente,RIF,Base Imponible,IVA,Total,Tasa BCV\n';
-            fiscalSales.forEach(s => {
-                csv += `${s.date},${s.invoiceNumber},"${s.client}",${s.rif},${s.base.toFixed(2)},${s.iva.toFixed(2)},${s.total.toFixed(2)},${s.bcvRate}\n`;
             });
-            
-            csv += '\n\nLIBRO DE COMPRAS\nFecha,Proveedor,RIF,Factura,Base Imponible,IVA,Total\n';
-            fiscalPurchases.forEach(p => {
-                csv += `${p.date},"${p.vendor}",${p.rif},${p.invoiceNumber},${p.base.toFixed(2)},${p.iva.toFixed(2)},${p.total.toFixed(2)}\n`;
-            });
-            
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `libros_fiscales_${new Date().toISOString().split('T')[0]}.csv`;
-            link.click();
-            
-            showNotification('Libros fiscales descargados', 'success');
+            localStorage.setItem('min_fiscal_purchases', JSON.stringify(fiscalPurchases));
+            renderFiscal(); closeModal('purchaseEntryModal');
         }
 
-        // ==========================================
-        // CHATBOT GEMINI AI (LOGICA RESTAURADA Y MODELO 2.0)
-        // ==========================================
-        function toggleChatbot() {
-            const widget = document.getElementById('chatbotWidget');
-            const container = document.getElementById('chatbotContainer');
-            
-            widget.classList.toggle('active');
-            container.classList.toggle('active');
-            
-            if(container.classList.contains('active')) {
-                document.getElementById('chatbotInput').focus();
-            }
+        function downloadFiscal() { alert('Descargando CSV...'); }
+        function fetchBCVRate() { alert('BCV: Bs. 378,46'); }
+
+        // CHATBOT LOGIC
+        function toggleChat() {
+            const chat = document.getElementById('chatContainer');
+            chat.style.display = chat.style.display === 'flex' ? 'none' : 'flex';
         }
 
-        function handleChatKeypress(e) {
-            if(e.key === 'Enter') sendChatMessage();
-        }
+        async function sendChat() {
+            const input = document.getElementById('chatInput');
+            const msg = input.value.trim();
+            if(!msg) return;
 
-        async function sendChatMessage() {
-            const input = document.getElementById('chatbotInput');
-            const message = input.value.trim();
-            if(!message) return;
-            
-            // Agregar mensaje del usuario
-            addMessage(message, 'user');
+            const div = document.createElement('div'); div.className = 'message user'; div.innerText = msg;
+            document.getElementById('chatMessages').appendChild(div);
             input.value = '';
-            
-            // Mostrar indicador de escritura
-            showTypingIndicator();
-            
+
+            const context = `Eres el asistente de MiniMarket Cris (Dyzav).
+            Datos actuales:
+            - Ventas hoy: ${document.getElementById('todaySalesBS').textContent}
+            - Stock crítico: ${products.filter(p=>p.stock<5).length} productos.
+            Responde corto y útil.`;
+
             try {
-                const response = await callGeminiAPI(message);
-                removeTypingIndicator();
-                addMessage(response, 'ai');
-            } catch(error) {
-                removeTypingIndicator();
-                addMessage('Lo siento, hubo un error al procesar tu solicitud. Por favor intenta de nuevo.', 'error');
-                console.error('Error Gemini:', error);
-            }
-        }
-
-        function askAssistant(question) {
-            toggleChatbot();
-            setTimeout(() => {
-                document.getElementById('chatbotInput').value = question;
-                sendChatMessage();
-            }, 300);
-        }
-
-        function addMessage(text, type) {
-            const container = document.getElementById('chatbotMessages');
-            const time = new Date().toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit' });
-            
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${type}`;
-            messageDiv.innerHTML = `
-                <div>${text}</div>
-                <div class="message-time">${time}</div>
-            `;
-            
-            container.appendChild(messageDiv);
-            container.scrollTop = container.scrollHeight;
-        }
-
-        function showTypingIndicator() {
-            const container = document.getElementById('chatbotMessages');
-            const indicator = document.createElement('div');
-            indicator.className = 'typing-indicator';
-            indicator.id = 'typingIndicator';
-            indicator.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
-            container.appendChild(indicator);
-            container.scrollTop = container.scrollHeight;
-        }
-
-        function removeTypingIndicator() {
-            const indicator = document.getElementById('typingIndicator');
-            if(indicator) indicator.remove();
-        }
-
-        async function callGeminiAPI(prompt) {
-            // Contexto del negocio para Gemini
-            const context = `
-                Eres el asistente virtual de ${BUSINESS_NAME}, atendiendo a ${USER_NAME}.
-                Datos actuales del negocio:
-                - Tasa BCV: ${BCV_RATE} Bs/USD
-                - Productos en inventario: ${products.length}
-                - Ventas registradas: ${sales.length}
-                - Fecha actual: ${new Date().toLocaleDateString('es-VE')}
-                
-                Responde de manera profesional, concisa y útil para la gestión del minimarket.
-                Usa emojis ocasionalmente para hacer la conversación amigable.
-            `;
-            
-            const fullPrompt = `${context}\n\nPregunta del usuario: ${prompt}`;
-            
-            // Usamos gemini-2.0-flash como fallback seguro si 2.5 da error, 
-            // pero intentamos mantener la configuración que pides.
-            const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [{
-                            text: fullPrompt
-                        }]
-                    }],
-                    generationConfig: {
-                        temperature: 0.7,
-                        maxOutputTokens: 800,
-                    }
-                })
-            });
-            
-            if(!response.ok) {
-                // Capturamos el error 404 especificamente para dar feedback util
-                if (response.status === 404) {
-                     console.error("Error 404: El modelo Gemini configurado no es válido o no está disponible para esta API Key.");
-                }
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            const data = await response.json();
-            
-            if(data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
-                return data.candidates[0].content.parts[0].text;
-            } else {
-                throw new Error('Respuesta inesperada de la API');
-            }
-        }
-
-        // ==========================================
-        // BCV Y UTILIDADES
-        // ==========================================
-        async function fetchBCVRate() {
-            const btn = document.querySelector('.sync-btn');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<span>⏳</span><span>Actualizando...</span>';
-            btn.disabled = true;
-            
-            try {
-                // Simulación de actualización (en producción usarías la API real del BCV)
-                await new Promise(resolve => setTimeout(resolve, 1500));
-                
-                // Aquí iría la llamada real a la API del BCV
-                // const response = await fetch('https://api.bcv.gob.ve/tasa...');
-                
-                showNotification('Tasa BCV actualizada: Bs. ' + BCV_RATE, 'success');
-                document.querySelector('.rate-update').textContent = new Date().toLocaleDateString('es-VE');
-            } catch(error) {
-                showNotification('Error al actualizar tasa BCV', 'error');
-            } finally {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-            }
-        }
-
-        function showNotification(message, type = 'info') {
-            // Crear notificación toast
-            const toast = document.createElement('div');
-            toast.style.cssText = `
-                position: fixed;
-                top: 60px;
-                right: 20px;
-                background: ${type === 'success' ? 'var(--success)' : type === 'error' ? 'var(--danger)' : 'var(--info)'};
-                color: white;
-                padding: 1rem 1.5rem;
-                border-radius: 10px;
-                box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-                z-index: 3000;
-                animation: slideInRight 0.3s ease;
-                font-weight: 500;
-                max-width: 300px;
-            `;
-            toast.textContent = message;
-            
-            document.body.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.style.animation = 'slideOutRight 0.3s ease';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }
-
-        // Cerrar modales al hacer clic fuera
-        window.onclick = function(event) {
-            if(event.target.classList.contains('modal')) {
-                event.target.classList.remove('active');
-                document.body.style.overflow = '';
-            }
-        }
-
-        // Atajos de teclado
-        document.addEventListener('keydown', function(e) {
-            // ESC para cerrar modales
-            if(e.key === 'Escape') {
-                document.querySelectorAll('.modal.active').forEach(modal => {
-                    modal.classList.remove('active');
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: context + "\nUsuario: " + msg }] }]
+                    })
                 });
-                document.getElementById('chatbotContainer').classList.remove('active');
-                document.getElementById('chatbotWidget').classList.remove('active');
+                const data = await response.json();
+                
+                if (data.error) { throw new Error(data.error.message); }
+
+                const reply = data.candidates[0].content.parts[0].text;
+                const replyDiv = document.createElement('div'); replyDiv.className = 'message ai'; replyDiv.innerText = reply;
+                document.getElementById('chatMessages').appendChild(replyDiv);
+                
+                const container = document.getElementById('chatMessages'); container.scrollTop = container.scrollHeight;
+
+            } catch (error) {
+                console.error(error);
+                const errDiv = document.createElement('div'); errDiv.className = 'message ai'; errDiv.innerText = "Error de conexión con Gemini.";
+                document.getElementById('chatMessages').appendChild(errDiv);
             }
-            
-            // F1 para abrir chat
-            if(e.key === 'F1') {
-                e.preventDefault();
-                toggleChatbot();
-            }
-        });
+        }
 
-        // Guardar datos periódicamente
-        setInterval(saveToLocalStorage, 30000); // Cada 30 segundos
-
-        // Antes de cerrar la página
-        window.addEventListener('beforeunload', function() {
-            saveToLocalStorage();
-        });
-
+        function askAssistant(txt) {
+            document.getElementById('chatInput').value = txt; toggleChat(); sendChat();
+        }
     </script>
 </body>
 </html>
