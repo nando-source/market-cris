@@ -206,7 +206,7 @@
                     </div>
                     <div class="stat-card" style="background:var(--ai-gradient); color:white">
                         <small style="color:rgba(255,255,255,0.8)">IA Activa</small>
-                        <div class="stat-value">Gemini 2.0</div>
+                        <div class="stat-value">Gemini 2.0 Lite</div>
                     </div>
                 </div>
 
@@ -421,15 +421,15 @@
     <script>
         // CONFIGURACIÓN DYZAV
         const GEMINI_API_KEY = 'AIzaSyAj-nK6iC2Yb656r2mul8FoclOwiYzJvv8'; 
-        // USAMOS 2.0 FLASH PORQUE ES EL MÁS ESTABLE HOY
-        const GEMINI_MODEL = 'gemini-2.0-flash'; 
+        // USAMOS 2.0 FLASH LITE PARA EVITAR BLOQUEO DE CUOTA EN CUENTAS NUEVAS
+        const GEMINI_MODEL = 'gemini-2.0-flash-lite'; 
         const BCV_RATE = 378.46;
 
         // VARIABLES GRÁFICAS
         let salesChartInstance = null;
         let profitsChartInstance = null;
 
-        // INICIALIZACIÓN DE PRODUCTOS (LISTA COMPLETA 20 ITEMS)
+        // 1. GENERADOR DE DATOS INICIALES (PRODUCTOS - 20 ITEMS)
         let products = JSON.parse(localStorage.getItem('min_prod')) || [
             {code: 'A01', name: 'Arroz Mary 1kg', stock: 45, cost: 65, price: 95},
             {code: 'AC01', name: 'Aceite Mazeite 1L', stock: 12, cost: 110, price: 165},
@@ -453,50 +453,31 @@
             {code: 'JAM01', name: 'Jamón Pierna (Kg)', stock: 8, cost: 220, price: 310}
         ];
 
-        // DATOS FISCALES DE EJEMPLO
+        // 2. GENERADOR DE DATOS DE VENTAS Y LIBROS FISCALES
+        let sales = JSON.parse(localStorage.getItem('min_sales')) || [];
         let fiscalSales = JSON.parse(localStorage.getItem('min_fiscal_sales')) || [];
         let fiscalPurchases = JSON.parse(localStorage.getItem('min_fiscal_purchases')) || [];
 
-        // GENERADOR DE DATOS DE PRUEBA (DEMO MAKER)
-        function generateDemoSales() {
-            const demoSales = [];
-            const today = new Date();
-            // Generar también datos fiscales de prueba si están vacíos
-            if(fiscalSales.length === 0) {
-                for(let i=0; i<15; i++) {
-                    fiscalSales.push({
-                        date: new Date(today.getTime() - i*86400000).toISOString().split('T')[0],
-                        invoiceNumber: `001-${1000+i}`,
-                        client: 'Consumidor Final',
-                        rif: 'V-00000000',
-                        total: Math.floor(Math.random()*500 + 100)
-                    });
-                }
-                localStorage.setItem('min_fiscal_sales', JSON.stringify(fiscalSales));
-            }
-            // Generar compras
-            if(fiscalPurchases.length === 0) {
-                for(let i=0; i<5; i++) {
-                    fiscalPurchases.push({
-                        date: new Date(today.getTime() - i*100000000).toISOString().split('T')[0],
-                        invoiceNumber: `FAC-${500+i}`,
-                        vendor: 'Distribuidora Polar',
-                        rif: 'J-00000000',
-                        total: Math.floor(Math.random()*2000 + 500)
-                    });
-                }
-                localStorage.setItem('min_fiscal_purchases', JSON.stringify(fiscalPurchases));
-            }
+        function generateDemoData() {
+            // Solo generar si está vacío
+            if (sales.length > 0) return;
 
+            const today = new Date();
+            
+            // --- A. Generar Ventas (45 días atrás) ---
             for(let i = 0; i < 45; i++) {
                 const date = new Date(today);
                 date.setDate(date.getDate() - i);
-                const numVentas = Math.floor(Math.random() * 5) + 1;
-                for(let v = 0; v < numVentas; v++) {
+                
+                // Ventas por día: Aleatorio entre 1 y 5
+                const dailyTransactions = Math.floor(Math.random() * 5) + 1;
+                
+                for(let t = 0; t < dailyTransactions; t++) {
                     const items = [];
                     const numItems = Math.floor(Math.random() * 3) + 1;
                     let totalVenta = 0;
                     let profitVenta = 0;
+
                     for(let k = 0; k < numItems; k++) {
                         const prod = products[Math.floor(Math.random() * products.length)];
                         const qty = Math.floor(Math.random() * 2) + 1;
@@ -504,27 +485,78 @@
                         totalVenta += prod.price * qty;
                         profitVenta += (prod.price - prod.cost) * qty;
                     }
-                    demoSales.push({ date: new Date(date), total: totalVenta, profit: profitVenta, items: items });
+
+                    // Guardar Venta Operativa
+                    const saleRecord = { 
+                        date: date.toISOString(), 
+                        total: totalVenta, 
+                        profit: profitVenta, 
+                        items: items,
+                        invoiceNumber: `001-${10000 + sales.length + fiscalSales.length}`
+                    };
+                    sales.push(saleRecord);
+
+                    // Guardar Venta Fiscal (Simplificada para libro)
+                    fiscalSales.push({
+                        date: date.toISOString().split('T')[0],
+                        invoiceNumber: saleRecord.invoiceNumber,
+                        client: Math.random() > 0.7 ? "Cliente Registrado" : "Consumidor Final",
+                        rif: Math.random() > 0.7 ? "V-12345678" : "V-00000000",
+                        total: totalVenta
+                    });
                 }
             }
-            return demoSales.sort((a,b) => b.date - a.date);
-        }
 
-        // CARGA DE VENTAS
-        let sales = JSON.parse(localStorage.getItem('min_sales'));
-        if (!sales || sales.length === 0) {
-            sales = generateDemoSales();
+            // --- B. Generar Compras (Libro de Compras) ---
+            const proveedores = [
+                {name: "Alimentos Polar", rif: "J-00006372-9"},
+                {name: "Plumrose Latinoamericana", rif: "J-00035136-0"},
+                {name: "Procter & Gamble", rif: "J-30810986-0"},
+                {name: "Distribuidora Dyzav", rif: "J-50012345-6"}
+            ];
+
+            for(let i = 0; i < 15; i++) {
+                const date = new Date(today);
+                date.setDate(date.getDate() - (i * 3)); // Una compra cada 3 días
+                const prov = proveedores[Math.floor(Math.random() * proveedores.length)];
+                
+                fiscalPurchases.push({
+                    date: date.toISOString().split('T')[0],
+                    vendor: prov.name,
+                    rif: prov.rif,
+                    invoiceNumber: `FAC-${Math.floor(Math.random() * 9000) + 1000}`,
+                    total: Math.floor(Math.random() * 2000) + 500
+                });
+            }
+
+            // Ordenar por fecha
+            sales.sort((a,b) => new Date(b.date) - new Date(a.date));
+            fiscalSales.sort((a,b) => new Date(b.date) - new Date(a.date));
+            fiscalPurchases.sort((a,b) => new Date(b.date) - new Date(a.date));
+
+            // Guardar en LocalStorage
             localStorage.setItem('min_sales', JSON.stringify(sales));
-        } else {
-            sales = sales.map(s => ({...s, date: new Date(s.date)}));
+            localStorage.setItem('min_fiscal_sales', JSON.stringify(fiscalSales));
+            localStorage.setItem('min_fiscal_purchases', JSON.stringify(fiscalPurchases));
+            localStorage.setItem('min_prod', JSON.stringify(products));
         }
 
         let cart = [];
 
         // INICIALIZACIÓN
         document.addEventListener('DOMContentLoaded', () => {
+            generateDemoData(); // ¡Aquí ocurre la magia de los datos ficticios!
+            
+            // Re-leer datos por si se acaban de generar
+            sales = JSON.parse(localStorage.getItem('min_sales'));
+            fiscalSales = JSON.parse(localStorage.getItem('min_fiscal_sales'));
+            fiscalPurchases = JSON.parse(localStorage.getItem('min_fiscal_purchases'));
+            // Fix Fechas en Sales (que vienen como string del JSON)
+            sales = sales.map(s => ({...s, date: new Date(s.date)}));
+
             const dateStr = new Date().toLocaleDateString('es-VE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
             document.getElementById('currentDateDisplay').textContent = dateStr;
+            
             updateDashboard();
             renderInventory();
             renderFiscal();
@@ -539,7 +571,9 @@
             if(u === 'crisbel' && p === 'crisbel2026') {
                 document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('appContainer').style.display = 'block';
-                updateDashboard(); renderProfits(); // Refrescar gráficos
+                // Refrescar gráficos al mostrarse el contenedor (Chart.js a veces necesita esto)
+                updateDashboard(); 
+                renderProfits();
             } else { alert('Credenciales incorrectas'); }
         }
 
@@ -566,28 +600,31 @@
 
         function logout() { if(confirm('¿Salir del sistema?')) location.reload(); }
 
-        // LÓGICA DE GRÁFICOS
+        // LÓGICA DE GRÁFICOS (CHART.JS)
         function renderCharts() {
             const ctxSales = document.getElementById('salesChart').getContext('2d');
+            
+            // Agrupar ventas últimos 30 días
             const salesMap = {};
             const today = new Date();
+            const labels = [];
+            const dataTotal = [];
+            const dataProfit = [];
+
             for(let i=29; i>=0; i--) {
                 const d = new Date(today);
                 d.setDate(d.getDate() - i);
-                salesMap[d.toLocaleDateString()] = {total:0, profit:0};
+                const dateKey = d.toLocaleDateString('es-VE'); // Clave local
+                labels.push(dateKey);
+                
+                // Filtrar ventas de este día
+                const daySales = sales.filter(s => s.date.toLocaleDateString('es-VE') === dateKey);
+                const total = daySales.reduce((acc, s) => acc + s.total, 0);
+                const profit = daySales.reduce((acc, s) => acc + s.profit, 0);
+                
+                dataTotal.push(total);
+                dataProfit.push(profit);
             }
-
-            sales.forEach(s => {
-                const dateKey = new Date(s.date).toLocaleDateString();
-                if(salesMap[dateKey]) {
-                    salesMap[dateKey].total += s.total;
-                    salesMap[dateKey].profit += s.profit;
-                }
-            });
-
-            const labels = Object.keys(salesMap);
-            const dataTotal = Object.values(salesMap).map(v => v.total);
-            const dataProfit = Object.values(salesMap).map(v => v.profit);
 
             if(salesChartInstance) salesChartInstance.destroy();
 
@@ -600,7 +637,12 @@
                         { label: 'Ganancia (Bs)', data: dataProfit, borderColor: '#27AE60', backgroundColor: 'rgba(39, 174, 96, 0.1)', tension: 0.4, fill: true }
                     ]
                 },
-                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    scales: { y: { beginAtZero: true } },
+                    plugins: { legend: { position: 'top' } }
+                }
             });
         }
 
@@ -646,7 +688,8 @@
             document.getElementById('monthRevenueBS').textContent = `Bs. ${monthRevenue.toFixed(2)}`;
             document.getElementById('monthProfitBS').textContent = `Bs. ${monthProfit.toFixed(2)}`;
 
-            renderCharts(); 
+            // IMPORTANTE: Renderizar gráfico después de actualizar datos
+            setTimeout(renderCharts, 100); 
         }
 
         function renderInventory() {
@@ -689,7 +732,7 @@
                 tbody.innerHTML += `<tr><td>${stat.name}</td><td>${stat.qty}</td><td style="color:var(--success);">+${stat.profit.toFixed(2)}</td></tr>`;
             });
 
-            renderProfitsCharts(productStats);
+            setTimeout(() => renderProfitsCharts(productStats), 100);
         }
 
         // POS
@@ -718,7 +761,25 @@
             const total = cart.reduce((acc, item) => acc + item.price, 0);
             const profit = cart.reduce((acc, item) => acc + (item.price - item.cost), 0);
             
-            sales.unshift({ date: new Date(), total: total, profit: profit, items: cart });
+            // Venta nueva
+            const saleRecord = { 
+                date: new Date().toISOString(), 
+                total: total, 
+                profit: profit, 
+                items: cart,
+                invoiceNumber: `001-${10000 + sales.length + fiscalSales.length + 1}`
+            };
+            
+            sales.unshift(saleRecord);
+            
+            // Registrar también en Libro Fiscal automáticamente
+            fiscalSales.unshift({
+                date: new Date().toISOString().split('T')[0],
+                invoiceNumber: saleRecord.invoiceNumber,
+                client: "Consumidor Final",
+                rif: "V-00000000",
+                total: total
+            });
             
             cart.forEach(cItem => {
                 const p = products.find(x => x.code === cItem.code);
@@ -727,6 +788,7 @@
 
             localStorage.setItem('min_prod', JSON.stringify(products));
             localStorage.setItem('min_sales', JSON.stringify(sales));
+            localStorage.setItem('min_fiscal_sales', JSON.stringify(fiscalSales));
             
             cart = []; renderCart(); renderInventory(); updateDashboard(); renderFiscal();
             alert('¡Venta Exitosa!');
@@ -759,7 +821,7 @@
             const purchBody = document.getElementById('purchasesBookBody');
             purchBody.innerHTML = fiscalPurchases.map(p => `<tr><td>${p.date}</td><td>${p.vendor}</td><td>${p.rif}</td><td>${p.invoiceNumber}</td><td>${p.total.toFixed(2)}</td></tr>`).join('');
 
-            // Resumen (Simplificado)
+            // Resumen
             const deb = fiscalSales.reduce((a,b)=>a+(b.total*0.16),0);
             const cred = fiscalPurchases.reduce((a,b)=>a+(b.total*0.16),0);
             document.getElementById('ivaDebit').textContent = `Bs. ${deb.toFixed(2)}`;
@@ -803,7 +865,7 @@
         function downloadFiscal() { alert('Descargando CSV...'); }
         function fetchBCVRate() { alert('BCV: Bs. 378,46'); }
 
-        // CHATBOT LOGIC (REPARADA)
+        // CHATBOT LOGIC
         function toggleChat() {
             const chat = document.getElementById('chatContainer');
             chat.style.display = chat.style.display === 'flex' ? 'none' : 'flex';
@@ -815,12 +877,10 @@
             const msg = input.value.trim();
             if(!msg) return;
 
-            // UI
             const div = document.createElement('div'); div.className = 'message user'; div.innerText = msg;
             document.getElementById('chatMessages').appendChild(div);
             input.value = '';
-            input.disabled = true; // Bloquear mientras piensa
-            btn.disabled = true;
+            input.disabled = true; btn.disabled = true;
 
             const context = `Eres el asistente de MiniMarket Cris (Dyzav).
             Datos actuales:
@@ -836,36 +896,24 @@
                         contents: [{ parts: [{ text: context + "\nUsuario: " + msg }] }]
                     })
                 });
-                
                 const data = await response.json();
                 
-                if (data.error) {
-                    throw new Error(data.error.message || "Error desconocido de API");
-                }
+                if (data.error) { throw new Error(data.error.message); }
 
-                if (data.candidates && data.candidates[0].content) {
-                    const reply = data.candidates[0].content.parts[0].text;
-                    const replyDiv = document.createElement('div'); replyDiv.className = 'message ai'; replyDiv.innerText = reply;
-                    document.getElementById('chatMessages').appendChild(replyDiv);
-                }
-
+                const reply = data.candidates[0].content.parts[0].text;
+                const replyDiv = document.createElement('div'); replyDiv.className = 'message ai'; replyDiv.innerText = reply;
+                document.getElementById('chatMessages').appendChild(replyDiv);
+                
             } catch (error) {
                 console.error(error);
-                const errDiv = document.createElement('div'); 
-                errDiv.className = 'message ai'; 
-                errDiv.style.color = 'red';
-                errDiv.innerText = `Error: ${error.message}`;
+                const errDiv = document.createElement('div'); errDiv.className = 'message ai'; errDiv.innerText = "Error: " + error.message;
                 document.getElementById('chatMessages').appendChild(errDiv);
             } finally {
-                // SIEMPRE desbloquear al final
-                input.disabled = false;
-                btn.disabled = false;
-                input.focus();
+                input.disabled = false; btn.disabled = false; input.focus();
                 const container = document.getElementById('chatMessages'); container.scrollTop = container.scrollHeight;
             }
         }
 
-        // Enter key
         document.getElementById('chatInput').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') sendChat();
         });
